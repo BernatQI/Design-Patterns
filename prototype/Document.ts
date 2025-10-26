@@ -61,8 +61,8 @@ export class Document implements IPrototype<Document> {
             .join(', ');
             
         return `📄 Documento: "${this.title}"
-📝 Contenido: ${this.content}
-📅 Creado: ${this.createdAt.toLocaleString()}
-🏷️  Metadata: {${metadataStr}}`;
+          📝 Contenido: ${this.content}
+          📅 Creado: ${this.createdAt.toLocaleString()}
+          🏷️  Metadata: {${metadataStr}}`;
     }
 }
