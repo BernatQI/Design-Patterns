@@ -13,7 +13,7 @@ function main(): void {
     // Crear servicio de pagos
     const paymentService = new PaymentService(paypalAdapter);
 
-    console.log("1️⃣ Usando PayPal (a través del adapter):");
+    console.log("\n1️⃣ Usando PayPal (a través del adapter):");
     console.log("=".repeat(50));
     
     paymentService.executePayment(99.99, "USD", "4532123456789012");
