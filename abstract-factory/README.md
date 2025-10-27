@@ -1,607 +1,918 @@
-# Patrón Abstract Factory
+# Abstract Factory Pattern
 
-## Diagrama UML
+[🇪🇸 Versión en Español](./README.es.md) | 🇺🇸 English Version
+
+## UML Diagram
 
 ```mermaid
 classDiagram
+    %% Abstract Product Interfaces
+    class Chair {
+        <<interface>>
+        +sitOn(): void
+        +getComfortLevel(): number
+    }
+
+    class Sofa {
+        <<interface>>
+        +lieDown(): void
+        +getSeatingCapacity(): number
+    }
+
+    class CoffeeTable {
+        <<interface>>
+        +putItems(): void
+        +getStorageSpace(): number
+    }
+
     %% Abstract Factory
     class FurnitureFactory {
-        <<abstract>>
-        +createChair(): Chair*
-        +createSofa(): Sofa*
-        +createTable(): Table*
+        <<interface>>
+        +createChair(): Chair
+        +createSofa(): Sofa
+        +createCoffeeTable(): CoffeeTable
+    }
+
+    %% Victorian Style Products
+    class VictorianChair {
+        +sitOn(): void
+        +getComfortLevel(): number
+        +hasVelvetUpholstery(): boolean
+    }
+
+    class VictorianSofa {
+        +lieDown(): void
+        +getSeatingCapacity(): number
+        +hasGoldTrim(): boolean
+    }
+
+    class VictorianCoffeeTable {
+        +putItems(): void
+        +getStorageSpace(): number
+        +hasCarvings(): boolean
+    }
+
+    %% Modern Style Products
+    class ModernChair {
+        +sitOn(): void
+        +getComfortLevel(): number
+        +isErgonomic(): boolean
+    }
+
+    class ModernSofa {
+        +lieDown(): void
+        +getSeatingCapacity(): number
+        +hasUSBPorts(): boolean
+    }
+
+    class ModernCoffeeTable {
+        +putItems(): void
+        +getStorageSpace(): number
+        +hasGlassTop(): boolean
+    }
+
+    %% Industrial Style Products
+    class IndustrialChair {
+        +sitOn(): void
+        +getComfortLevel(): number
+        +isMetalFrame(): boolean
+    }
+
+    class IndustrialSofa {
+        +lieDown(): void
+        +getSeatingCapacity(): number
+        +hasLeatherFinish(): boolean
+    }
+
+    class IndustrialCoffeeTable {
+        +putItems(): void
+        +getStorageSpace(): number
+        +hasWheels(): boolean
     }
 
     %% Concrete Factories
-    class ModernFurnitureFactory {
-        +createChair(): Chair
-        +createSofa(): Sofa
-        +createTable(): Table
-    }
-
     class VictorianFurnitureFactory {
         +createChair(): Chair
         +createSofa(): Sofa
-        +createTable(): Table
+        +createCoffeeTable(): CoffeeTable
+    }
+
+    class ModernFurnitureFactory {
+        +createChair(): Chair
+        +createSofa(): Sofa
+        +createCoffeeTable(): CoffeeTable
     }
 
     class IndustrialFurnitureFactory {
         +createChair(): Chair
         +createSofa(): Sofa
-        +createTable(): Table
+        +createCoffeeTable(): CoffeeTable
     }
 
-    %% Abstract Products
-    class Chair {
-        <<abstract>>
-        #material: string
-        #color: string
-        +constructor(material: string, color: string)
-        +sitOn(): void*
-        +getDescription(): string*
-    }
-
-    class Sofa {
-        <<abstract>>
-        #material: string
-        #seats: number
-        +constructor(material: string, seats: number)
-        +lieDown(): void*
-        +getDescription(): string*
-    }
-
-    class Table {
-        <<abstract>>
-        #material: string
-        #height: number
-        +constructor(material: string, height: number)
-        +placeItem(): void*
-        +getDescription(): string*
-    }
-
-    %% Modern Products
-    class ModernChair {
-        +constructor(material: string, color: string)
-        +sitOn(): void
-        +getDescription(): string
-        +adjustHeight(): void
-    }
-
-    class ModernSofa {
-        +constructor(material: string, seats: number)
-        +lieDown(): void
-        +getDescription(): string
-        +toggleRecline(): void
-    }
-
-    class ModernTable {
-        +constructor(material: string, height: number)
-        +placeItem(): void
-        +getDescription(): string
-        +extendSurface(): void
-    }
-
-    %% Victorian Products
-    class VictorianChair {
-        +constructor(material: string, color: string)
-        +sitOn(): void
-        +getDescription(): string
-        +showOrnaments(): void
-    }
-
-    class VictorianSofa {
-        +constructor(material: string, seats: number)
-        +lieDown(): void
-        +getDescription(): string
-        +displayPattern(): void
-    }
-
-    class VictorianTable {
-        +constructor(material: string, height: number)
-        +placeItem(): void
-        +getDescription(): string
-        +polishWood(): void
-    }
-
-    %% Industrial Products
-    class IndustrialChair {
-        +constructor(material: string, color: string)
-        +sitOn(): void
-        +getDescription(): string
-        +adjustBolts(): void
-    }
-
-    class IndustrialSofa {
-        +constructor(material: string, seats: number)
-        +lieDown(): void
-        +getDescription(): string
-        +showMetalFrame(): void
-    }
-
-    class IndustrialTable {
-        +constructor(material: string, height: number)
-        +placeItem(): void
-        +getDescription(): string
-        +showRivets(): void
-    }
-
-    %% Client/Store
+    %% Client
     class FurnitureStore {
         -factory: FurnitureFactory
         +constructor(factory: FurnitureFactory)
-        +createFurnitureSet(): FurnitureSet
-        +displayCatalog(): void
+        +createLivingRoomSet(): void
+        +displayFurniture(): void
     }
 
-    class FurnitureSet {
-        +chair: Chair
-        +sofa: Sofa
-        +table: Table
-        +constructor(chair: Chair, sofa: Sofa, table: Table)
-        +displaySet(): void
-    }
+    %% Relationships
+    VictorianChair ..|> Chair : implements
+    VictorianSofa ..|> Sofa : implements
+    VictorianCoffeeTable ..|> CoffeeTable : implements
 
-    %% Factory Relationships
-    ModernFurnitureFactory --|> FurnitureFactory : implements
-    VictorianFurnitureFactory --|> FurnitureFactory : implements
-    IndustrialFurnitureFactory --|> FurnitureFactory : implements
+    ModernChair ..|> Chair : implements
+    ModernSofa ..|> Sofa : implements
+    ModernCoffeeTable ..|> CoffeeTable : implements
 
-    %% Product Relationships
-    ModernChair --|> Chair : implements
-    ModernSofa --|> Sofa : implements
-    ModernTable --|> Table : implements
+    IndustrialChair ..|> Chair : implements
+    IndustrialSofa ..|> Sofa : implements
+    IndustrialCoffeeTable ..|> CoffeeTable : implements
 
-    VictorianChair --|> Chair : implements
-    VictorianSofa --|> Sofa : implements
-    VictorianTable --|> Table : implements
+    VictorianFurnitureFactory ..|> FurnitureFactory : implements
+    ModernFurnitureFactory ..|> FurnitureFactory : implements
+    IndustrialFurnitureFactory ..|> FurnitureFactory : implements
 
-    IndustrialChair --|> Chair : implements
-    IndustrialSofa --|> Sofa : implements
-    IndustrialTable --|> Table : implements
+    VictorianFurnitureFactory --> VictorianChair : creates
+    VictorianFurnitureFactory --> VictorianSofa : creates
+    VictorianFurnitureFactory --> VictorianCoffeeTable : creates
 
-    %% Creation Relationships
-    ModernFurnitureFactory ..> ModernChair : creates
-    ModernFurnitureFactory ..> ModernSofa : creates
-    ModernFurnitureFactory ..> ModernTable : creates
+    ModernFurnitureFactory --> ModernChair : creates
+    ModernFurnitureFactory --> ModernSofa : creates
+    ModernFurnitureFactory --> ModernCoffeeTable : creates
 
-    VictorianFurnitureFactory ..> VictorianChair : creates
-    VictorianFurnitureFactory ..> VictorianSofa : creates
-    VictorianFurnitureFactory ..> VictorianTable : creates
+    IndustrialFurnitureFactory --> IndustrialChair : creates
+    IndustrialFurnitureFactory --> IndustrialSofa : creates
+    IndustrialFurnitureFactory --> IndustrialCoffeeTable : creates
 
-    IndustrialFurnitureFactory ..> IndustrialChair : creates
-    IndustrialFurnitureFactory ..> IndustrialSofa : creates
-    IndustrialFurnitureFactory ..> IndustrialTable : creates
-
-    %% Client Relationships
     FurnitureStore --> FurnitureFactory : uses
-    FurnitureStore ..> FurnitureSet : creates
-    FurnitureSet --> Chair : contains
-    FurnitureSet --> Sofa : contains
-    FurnitureSet --> Table : contains
+    FurnitureStore --> Chair : uses
+    FurnitureStore --> Sofa : uses
+    FurnitureStore --> CoffeeTable : uses
 
-    note for FurnitureFactory "Abstract Factory: Define interfaz\npara crear familias de productos"
-    note for FurnitureStore "Cliente: Usa factory sin conocer\nproductos concretos"
+    note for FurnitureFactory "Abstract Factory:\nCreates families of\nrelated products"
+    note for VictorianFurnitureFactory "Concrete Factory:\nCreates Victorian\nstyle furniture"
+    note for FurnitureStore "Client:\nWorks with abstract\ninterfaces only"
 ```
 
-## ¿Qué es el Patrón Abstract Factory?
+## What is the Abstract Factory Pattern?
 
-El patrón **Abstract Factory** es un patrón de diseño creacional que permite crear **familias completas de objetos relacionados** sin especificar sus clases concretas. Es como una "fábrica de fábricas" que garantiza que los productos creados sean compatibles entre sí.
+The **Abstract Factory** pattern is a creational design pattern that provides an interface for creating **families of related or dependent objects** without specifying their concrete classes. It's essentially a "factory of factories."
 
-## Problema que Resuelve
+## Problem it Solves
 
-### ❌ Sin Abstract Factory: Incompatibilidad de Productos
+### ❌ Without Abstract Factory: Inconsistent Product Families
 ```typescript
-class FurnitureSystem {
-    createFurnitureSet(): void {
-        // ¡PROBLEMA! Mezcla estilos incompatibles
-        const chair = new ModernChair("Cuero", "Negro");
-        const sofa = new VictorianSofa("Terciopelo", 3);  // ¡Victorian con Modern!
-        const table = new IndustrialTable("Acero", 75);   // ¡Industrial con los otros!
+class FurnitureStore {
+    createLivingRoom(style: string): void {
+        let chair: Chair;
+        let sofa: Sofa;
+        let table: CoffeeTable;
         
-        // Resultado: Set de muebles inconsistente
-        // No hay garantía de coherencia estilística
+        // Problem: Easy to mix incompatible styles
+        if (style === "victorian") {
+            chair = new VictorianChair();
+            sofa = new ModernSofa(); // Oops! Wrong style!
+            table = new VictorianCoffeeTable();
+        } else if (style === "modern") {
+            chair = new ModernChair();
+            sofa = new VictorianSofa(); // Another mismatch!
+            table = new ModernCoffeeTable();
+        }
+        
+        // Problems:
+        // 1. Easy to create mismatched product combinations
+        // 2. Code scattered across different places
+        // 3. Hard to ensure consistency
+        // 4. Difficult to add new product families
+        // 5. Violates Open/Closed Principle
+        
+        console.log("Living room created with mixed styles!");
+    }
+}
+```
+
+### ✅ With Abstract Factory: Consistent Product Families
+```typescript
+// Abstract factory ensures consistent product families
+interface FurnitureFactory {
+    createChair(): Chair;
+    createSofa(): Sofa;
+    createCoffeeTable(): CoffeeTable;
+}
+
+class VictorianFurnitureFactory implements FurnitureFactory {
+    createChair(): Chair {
+        return new VictorianChair();
+    }
+    
+    createSofa(): Sofa {
+        return new VictorianSofa();
+    }
+    
+    createCoffeeTable(): CoffeeTable {
+        return new VictorianCoffeeTable();
     }
 }
 
-// Problemas:
-// 1. No hay garantía de compatibilidad entre productos
-// 2. Fácil crear combinaciones incorrectas
-// 3. Difícil mantener consistencia
-// 4. Cliente debe conocer todas las clases concretas
-```
+class ModernFurnitureFactory implements FurnitureFactory {
+    createChair(): Chair {
+        return new ModernChair();
+    }
+    
+    createSofa(): Sofa {
+        return new ModernSofa();
+    }
+    
+    createCoffeeTable(): CoffeeTable {
+        return new ModernCoffeeTable();
+    }
+}
 
-### ✅ Con Abstract Factory: Familias Coherentes
-```typescript
 class FurnitureStore {
     constructor(private factory: FurnitureFactory) {}
     
-    createFurnitureSet(): FurnitureSet {
-        // ¡GARANTÍA! Todos los productos son del mismo estilo
+    createLivingRoom(): void {
+        // Guaranteed to create consistent product family
         const chair = this.factory.createChair();
         const sofa = this.factory.createSofa();
-        const table = this.factory.createTable();
+        const table = this.factory.createCoffeeTable();
         
-        return new FurnitureSet(chair, sofa, table);
+        // All products are guaranteed to be from the same family
+        chair.sitOn();
+        sofa.lieDown();
+        table.putItems();
+        
+        console.log("Living room created with consistent style!");
     }
 }
 
-// Con ModernFurnitureFactory = todos los productos son modernos
-// Con VictorianFurnitureFactory = todos los productos son victorianos
-// Con IndustrialFurnitureFactory = todos los productos son industriales
+// Usage
+const victorianFactory = new VictorianFurnitureFactory();
+const store = new FurnitureStore(victorianFactory);
+store.createLivingRoom(); // All Victorian furniture
 
-// Beneficios:
-// 1. Garantía de compatibilidad entre productos
-// 2. Imposible crear combinaciones incorrectas
-// 3. Fácil cambiar toda la familia de productos
-// 4. Cliente desacoplado de clases concretas
+// Benefits:
+// 1. Guarantees product consistency
+// 2. Easy to switch entire product families
+// 3. Supports new families without changing client
+// 4. Encapsulates product creation logic
 ```
 
-## Componentes del Patrón
+## Pattern Components
 
 ### 1. **Abstract Factory** (`FurnitureFactory`)
-- Define interfaz para crear cada tipo de producto
-- Declara métodos para crear todos los productos de la familia
-- No implementa la creación, solo define la interfaz
+- Declares methods for creating abstract products
+- Each method corresponds to a product type
+- All products in a family implement the same interface
 
-### 2. **Concrete Factory** (`ModernFurnitureFactory`, `VictorianFurnitureFactory`, `IndustrialFurnitureFactory`)
-- Implementa operaciones para crear productos de una familia específica
-- Cada factory crea productos que son compatibles entre sí
-- Garantiza la coherencia de la familia de productos
+### 2. **Concrete Factories** (`VictorianFurnitureFactory`, `ModernFurnitureFactory`)
+- Implement abstract factory methods
+- Create concrete products belonging to a single family
+- Ensure products are compatible with each other
 
-### 3. **Abstract Product** (`Chair`, `Sofa`, `Table`)
-- Define interfaz para un tipo de producto
-- Declara operaciones comunes para todos los productos de ese tipo
-- Es implementada por productos concretos
+### 3. **Abstract Products** (`Chair`, `Sofa`, `CoffeeTable`)
+- Declare interfaces for product types
+- All variants of a product type implement this interface
+- Client works with these abstractions
 
-### 4. **Concrete Product** (`ModernChair`, `VictorianSofa`, `IndustrialTable`, etc.)
-- Implementa la interfaz del producto abstracto
-- Define un producto específico creado por una factory específica
-- Productos de la misma familia son diseñados para trabajar juntos
+### 4. **Concrete Products** (`VictorianChair`, `ModernChair`)
+- Different implementations of abstract products
+- Each belongs to a specific product family
+- Designed to work together within their family
 
 ### 5. **Client** (`FurnitureStore`)
-- Usa solo interfaces declaradas por Abstract Factory y Abstract Product
-- No conoce clases concretas de productos
-- Puede trabajar con cualquier familia de productos
+- Uses only abstract factory and product interfaces
+- Doesn't know about concrete implementations
+- Can work with any product family
 
-## Flujo de Trabajo
+## When to Use Abstract Factory
 
+✅ **Use it when:**
+- You need to create families of related products
+- Products in a family are designed to work together
+- You want to enforce constraints on product combinations
+- You need to support multiple product families
+- Product creation logic is complex and should be centralized
+
+❌ **Don't use it when:**
+- You only have one product family
+- Products don't need to be consistent with each other
+- Simple Factory or Factory Method would suffice
+- The overhead of multiple abstractions isn't justified
+
+## Advantages
+
+👨‍👩‍👧‍👦 **Product Consistency**: Ensures compatible products work together
+🔄 **Easy Family Switching**: Change entire product family by swapping factory
+📈 **Extensibility**: Add new families without changing existing code
+🔒 **Encapsulation**: Hides product creation complexity
+🎯 **Single Responsibility**: Each factory creates one product family
+
+## Disadvantages
+
+📈 **Code Complexity**: Many interfaces and classes
+🧩 **Difficult Extension**: Adding new product types requires changing all factories
+⚡ **Overhead**: May be overkill for simple scenarios
+📚 **Learning Curve**: More complex than simpler factory patterns
+
+## Real-world Use Cases
+
+### 🖥️ **UI Component Factory**
 ```typescript
-// 1. Configuración inicial: elegir familia
-const factory: FurnitureFactory = new ModernFurnitureFactory();
-const store = new FurnitureStore(factory);
+// Abstract products
+interface Button {
+    render(): HTMLElement;
+    onClick(handler: () => void): void;
+}
 
-// 2. Crear familia completa de productos
-const furnitureSet = store.createFurnitureSet();
+interface TextField {
+    render(): HTMLElement;
+    getValue(): string;
+    setValue(value: string): void;
+}
 
-// 3. Todos los productos son compatibles
-furnitureSet.displaySet(); // Muestra set moderno coherente
+interface Checkbox {
+    render(): HTMLElement;
+    isChecked(): boolean;
+    setChecked(checked: boolean): void;
+}
 
-// 4. Cambiar familia es fácil
-const victorianFactory = new VictorianFurnitureFactory();
-const victorianStore = new FurnitureStore(victorianFactory);
-const victorianSet = victorianStore.createFurnitureSet(); // Set victoriano coherente
-```
+// Abstract factory
+interface UIFactory {
+    createButton(): Button;
+    createTextField(): TextField;
+    createCheckbox(): Checkbox;
+}
 
-## Cuándo Usar Abstract Factory
-
-✅ **Úsalo cuando:**
-- Tu código necesita trabajar con varias familias de productos relacionados
-- Quieres garantizar que productos de una familia sean compatibles
-- Quieres ocultar implementaciones concretas de productos
-- Necesitas configurar el sistema con una de varias familias de productos
-
-❌ **No lo uses cuando:**
-- Solo necesitas crear un tipo de producto
-- Las familias de productos no cambian frecuentemente
-- La complejidad no justifica la abstracción adicional
-
-## Ventajas
-
-🛡️ **Compatibilidad Garantizada**: Productos de una familia siempre son compatibles
-🔓 **Principio Abierto/Cerrado**: Fácil agregar nuevas familias sin modificar código existente
-🎯 **Single Responsibility**: Separa creación de uso de productos
-🔗 **Bajo Acoplamiento**: Cliente no depende de clases concretas
-🔄 **Consistency**: Garantiza consistencia entre productos relacionados
-
-## Desventajas
-
-📈 **Complejidad**: Introduce muchas interfaces y clases
-🏗️ **Rigidez**: Difícil agregar nuevos tipos de productos a familias existentes
-⚡ **Overhead**: Puede ser excesivo para casos simples
-🔧 **Mantenimiento**: Cambios en productos requieren cambios en todas las factories
-
-## Ejemplo Práctico: Sistema de Muebles
-
-### Escenario Real
-Una tienda de muebles online ofrece tres estilos de decoración:
-
-**Familias de Productos:**
-- **Modern**: Líneas limpias, materiales sintéticos, funcionalidad
-- **Victorian**: Ornamentación elaborada, madera noble, elegancia clásica  
-- **Industrial**: Metal y acero, diseño utilitario, estética fabril
-
-**Tipos de Productos:**
-- **Chair**: Para sentarse, cada estilo tiene características únicas
-- **Sofa**: Para relajarse, varía en diseño según el estilo
-- **Table**: Para trabajar/comer, materiales y formas diferentes por estilo
-
-### Garantía de Coherencia
-```typescript
-// Ejemplo: Cliente solicita decoración moderna
-const modernFactory = new ModernFurnitureFactory();
-const store = new FurnitureStore(modernFactory);
-
-const modernSet = store.createFurnitureSet();
-modernSet.displaySet();
-
-// Salida:
-// 🪑 Silla Moderna: Cuero sintético negro, altura ajustable
-// 🛋️ Sofá Moderno: Cuero sintético para 3 personas, reclinable  
-// 🪑 Mesa Moderna: Vidrio templado de 75cm, superficie extensible
-
-// ¡GARANTÍA! Todos son del mismo estilo y combinan perfectamente
-```
-
-### Flexibilidad de Configuración
-```typescript
-// Cambio de configuración sin modificar código cliente
-function createShowroom(style: 'modern' | 'victorian' | 'industrial'): FurnitureSet {
-    let factory: FurnitureFactory;
-    
-    switch(style) {
-        case 'modern':
-            factory = new ModernFurnitureFactory();
-            break;
-        case 'victorian':
-            factory = new VictorianFurnitureFactory();
-            break;
-        case 'industrial':
-            factory = new IndustrialFurnitureFactory();
-            break;
+// Windows UI family
+class WindowsUIFactory implements UIFactory {
+    createButton(): Button {
+        return new WindowsButton();
     }
     
-    const store = new FurnitureStore(factory);
-    return store.createFurnitureSet();
+    createTextField(): TextField {
+        return new WindowsTextField();
+    }
+    
+    createCheckbox(): Checkbox {
+        return new WindowsCheckbox();
+    }
 }
 
-// Uso
-const modernShowroom = createShowroom('modern');     // Set moderno
-const victorianShowroom = createShowroom('victorian'); // Set victoriano
-const industrialShowroom = createShowroom('industrial'); // Set industrial
+// macOS UI family
+class MacUIFactory implements UIFactory {
+    createButton(): Button {
+        return new MacButton();
+    }
+    
+    createTextField(): TextField {
+        return new MacTextField();
+    }
+    
+    createCheckbox(): Checkbox {
+        return new MacCheckbox();
+    }
+}
+
+// Web UI family
+class WebUIFactory implements UIFactory {
+    createButton(): Button {
+        return new WebButton();
+    }
+    
+    createTextField(): TextField {
+        return new WebTextField();
+    }
+    
+    createCheckbox(): Checkbox {
+        return new WebCheckbox();
+    }
+}
+
+// Application using UI factory
+class Application {
+    constructor(private uiFactory: UIFactory) {}
+    
+    createLoginForm(): HTMLElement {
+        const container = document.createElement('div');
+        
+        // All components will be from the same UI family
+        const usernameField = this.uiFactory.createTextField();
+        const passwordField = this.uiFactory.createTextField();
+        const rememberMe = this.uiFactory.createCheckbox();
+        const loginButton = this.uiFactory.createButton();
+        
+        container.appendChild(usernameField.render());
+        container.appendChild(passwordField.render());
+        container.appendChild(rememberMe.render());
+        container.appendChild(loginButton.render());
+        
+        return container;
+    }
+}
+
+// Usage based on platform
+function createApplication(): Application {
+    const platform = getPlatform();
+    
+    let factory: UIFactory;
+    switch (platform) {
+        case 'windows':
+            factory = new WindowsUIFactory();
+            break;
+        case 'macos':
+            factory = new MacUIFactory();
+            break;
+        case 'web':
+            factory = new WebUIFactory();
+            break;
+        default:
+            factory = new WebUIFactory();
+    }
+    
+    return new Application(factory);
+}
 ```
 
-## Casos de Uso Reales
-
-### 🎮 **Temas de UI Multiplataforma**
+### 🏭 **Database Provider Factory**
 ```typescript
-abstract class UIFactory {
-    abstract createButton(): Button;
-    abstract createScrollbar(): Scrollbar;
-    abstract createWindow(): Window;
+// Abstract products
+interface IConnection {
+    connect(): Promise<void>;
+    disconnect(): Promise<void>;
+    isConnected(): boolean;
 }
 
-class WindowsUIFactory extends UIFactory {
-    createButton(): Button { return new WindowsButton(); }
-    createScrollbar(): Scrollbar { return new WindowsScrollbar(); }
-    createWindow(): Window { return new WindowsWindow(); }
+interface ICommand {
+    execute(sql: string, params?: any[]): Promise<any>;
+    executeScalar(sql: string, params?: any[]): Promise<any>;
+    executeNonQuery(sql: string, params?: any[]): Promise<number>;
 }
 
-class MacUIFactory extends UIFactory {
-    createButton(): Button { return new MacButton(); }
-    createScrollbar(): Scrollbar { return new MacScrollbar(); }
-    createWindow(): Window { return new MacWindow(); }
+interface ITransaction {
+    begin(): Promise<void>;
+    commit(): Promise<void>;
+    rollback(): Promise<void>;
 }
 
-class LinuxUIFactory extends UIFactory {
-    createButton(): Button { return new LinuxButton(); }
-    createScrollbar(): Scrollbar { return new LinuxScrollbar(); }
-    createWindow(): Window { return new LinuxWindow(); }
+// Abstract factory
+interface DatabaseFactory {
+    createConnection(connectionString: string): IConnection;
+    createCommand(connection: IConnection): ICommand;
+    createTransaction(connection: IConnection): ITransaction;
+}
+
+// SQL Server family
+class SqlServerFactory implements DatabaseFactory {
+    createConnection(connectionString: string): IConnection {
+        return new SqlServerConnection(connectionString);
+    }
+    
+    createCommand(connection: IConnection): ICommand {
+        return new SqlServerCommand(connection);
+    }
+    
+    createTransaction(connection: IConnection): ITransaction {
+        return new SqlServerTransaction(connection);
+    }
+}
+
+// MySQL family
+class MySqlFactory implements DatabaseFactory {
+    createConnection(connectionString: string): IConnection {
+        return new MySqlConnection(connectionString);
+    }
+    
+    createCommand(connection: IConnection): ICommand {
+        return new MySqlCommand(connection);
+    }
+    
+    createTransaction(connection: IConnection): ITransaction {
+        return new MySqlTransaction(connection);
+    }
+}
+
+// PostgreSQL family
+class PostgreSqlFactory implements DatabaseFactory {
+    createConnection(connectionString: string): IConnection {
+        return new PostgreSqlConnection(connectionString);
+    }
+    
+    createCommand(connection: IConnection): ICommand {
+        return new PostgreSqlCommand(connection);
+    }
+    
+    createTransaction(connection: IConnection): ITransaction {
+        return new PostgreSqlTransaction(connection);
+    }
+}
+
+// Data access layer
+class Repository {
+    constructor(
+        private factory: DatabaseFactory,
+        private connectionString: string
+    ) {}
+    
+    async executeInTransaction<T>(
+        operation: (command: ICommand) => Promise<T>
+    ): Promise<T> {
+        const connection = this.factory.createConnection(this.connectionString);
+        const transaction = this.factory.createTransaction(connection);
+        const command = this.factory.createCommand(connection);
+        
+        try {
+            await connection.connect();
+            await transaction.begin();
+            
+            const result = await operation(command);
+            
+            await transaction.commit();
+            return result;
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        } finally {
+            await connection.disconnect();
+        }
+    }
 }
 ```
 
-### 🏭 **Conectores de Base de Datos**
+### 🎮 **Game Environment Factory**
 ```typescript
-abstract class DatabaseFactory {
-    abstract createConnection(): Connection;
-    abstract createCommand(): Command;
-    abstract createDataReader(): DataReader;
+// Abstract products
+interface Enemy {
+    attack(): number;
+    getHealth(): number;
+    getSprite(): string;
 }
 
-class MySQLFactory extends DatabaseFactory {
-    createConnection(): Connection { return new MySQLConnection(); }
-    createCommand(): Command { return new MySQLCommand(); }
-    createDataReader(): DataReader { return new MySQLDataReader(); }
+interface Weapon {
+    getDamage(): number;
+    getRange(): number;
+    getSprite(): string;
 }
 
-class PostgreSQLFactory extends DatabaseFactory {
-    createConnection(): Connection { return new PostgreSQLConnection(); }
-    createCommand(): Command { return new PostgreSQLCommand(); }
-    createDataReader(): DataReader { return new PostgreSQLDataReader(); }
+interface Terrain {
+    getMovementSpeed(): number;
+    canPass(): boolean;
+    getTexture(): string;
+}
+
+// Abstract factory
+interface EnvironmentFactory {
+    createEnemy(): Enemy;
+    createWeapon(): Weapon;
+    createTerrain(): Terrain;
+}
+
+// Forest environment family
+class ForestFactory implements EnvironmentFactory {
+    createEnemy(): Enemy {
+        return new Wolf(); // Forest-specific enemy
+    }
+    
+    createWeapon(): Weapon {
+        return new Bow(); // Good for forest hunting
+    }
+    
+    createTerrain(): Terrain {
+        return new Trees(); // Forest terrain
+    }
+}
+
+// Desert environment family
+class DesertFactory implements EnvironmentFactory {
+    createEnemy(): Enemy {
+        return new Scorpion(); // Desert-specific enemy
+    }
+    
+    createWeapon(): Weapon {
+        return new Scimitar(); // Desert-themed weapon
+    }
+    
+    createTerrain(): Terrain {
+        return new Sand(); // Desert terrain
+    }
+}
+
+// Arctic environment family
+class ArcticFactory implements EnvironmentFactory {
+    createEnemy(): Enemy {
+        return new PolarBear(); // Arctic-specific enemy
+    }
+    
+    createWeapon(): Weapon {
+        return new IceSpear(); // Cold-resistant weapon
+    }
+    
+    createTerrain(): Terrain {
+        return new Ice(); // Arctic terrain
+    }
+}
+
+// Game world
+class GameWorld {
+    constructor(private factory: EnvironmentFactory) {}
+    
+    generateLevel(): void {
+        // All elements will be thematically consistent
+        const enemy = this.factory.createEnemy();
+        const weapon = this.factory.createWeapon();
+        const terrain = this.factory.createTerrain();
+        
+        console.log(`Level generated with ${enemy.constructor.name} enemies`);
+        console.log(`Available weapon: ${weapon.constructor.name}`);
+        console.log(`Terrain type: ${terrain.constructor.name}`);
+        
+        // Elements work well together thematically and mechanically
+    }
+}
+
+// Game progression
+class Game {
+    private currentLevel = 1;
+    
+    createWorld(): GameWorld {
+        const factory = this.getEnvironmentFactory(this.currentLevel);
+        return new GameWorld(factory);
+    }
+    
+    private getEnvironmentFactory(level: number): EnvironmentFactory {
+        if (level <= 3) return new ForestFactory();
+        if (level <= 6) return new DesertFactory();
+        return new ArcticFactory();
+    }
 }
 ```
 
-### 🎨 **Temas de Aplicación**
-```typescript
-abstract class ThemeFactory {
-    abstract createColors(): ColorPalette;
-    abstract createFonts(): FontFamily;
-    abstract createIcons(): IconSet;
-}
-
-class DarkThemeFactory extends ThemeFactory {
-    createColors(): ColorPalette { return new DarkColorPalette(); }
-    createFonts(): FontFamily { return new DarkFontFamily(); }
-    createIcons(): IconSet { return new DarkIconSet(); }
-}
-
-class LightThemeFactory extends ThemeFactory {
-    createColors(): ColorPalette { return new LightColorPalette(); }
-    createFonts(): FontFamily { return new LightFontFamily(); }
-    createIcons(): IconSet { return new LightIconSet(); }
-}
-```
-
-### 🚗 **Fabricación de Vehículos**
-```typescript
-abstract class VehicleFactory {
-    abstract createEngine(): Engine;
-    abstract createWheels(): Wheel[];
-    abstract createInterior(): Interior;
-}
-
-class LuxuryCarFactory extends VehicleFactory {
-    createEngine(): Engine { return new V8Engine(); }
-    createWheels(): Wheel[] { return [new AlloyWheel(), /* ... */]; }
-    createInterior(): Interior { return new LeatherInterior(); }
-}
-
-class EconomyCarFactory extends VehicleFactory {
-    createEngine(): Engine { return new FourCylinderEngine(); }
-    createWheels(): Wheel[] { return [new SteelWheel(), /* ... */]; }
-    createInterior(): Interior { return new FabricInterior(); }
-}
-```
-
-### 🎪 **Elementos de Juego por Nivel**
-```typescript
-abstract class LevelFactory {
-    abstract createEnemies(): Enemy[];
-    abstract createPowerUps(): PowerUp[];
-    abstract createObstacles(): Obstacle[];
-}
-
-class BeginnerLevelFactory extends LevelFactory {
-    createEnemies(): Enemy[] { return [new WeakGoblin(), new SlowZombie()]; }
-    createPowerUps(): PowerUp[] { return [new HealthPotion(), new SpeedBoost()]; }
-    createObstacles(): Obstacle[] { return [new SmallRock(), new Puddle()]; }
-}
-
-class ExpertLevelFactory extends LevelFactory {
-    createEnemies(): Enemy[] { return [new StrongOrc(), new FastDemon()]; }
-    createPowerUps(): PowerUp[] { return [new SuperHealthPotion(), new FlightPower()]; }
-    createObstacles(): Obstacle[] { return [new LavaPool(), new SpikeWall()]; }
-}
-```
-
-## Abstract Factory vs Otros Patrones
+## Abstract Factory vs Other Patterns
 
 ### **Abstract Factory vs Factory Method**
-- **Abstract Factory**: Crea familias completas de productos relacionados
-- **Factory Method**: Crea un solo tipo de producto
+- **Abstract Factory**: Creates families of related products
+- **Factory Method**: Creates individual products
 
 ### **Abstract Factory vs Builder**
-- **Abstract Factory**: Crea diferentes familias de productos simples
-- **Builder**: Construye un producto complejo paso a paso
+- **Abstract Factory**: Creates complete product families in one go
+- **Builder**: Creates complex single objects step by step
 
 ### **Abstract Factory vs Prototype**
-- **Abstract Factory**: Crea productos desde cero usando constructores
-- **Prototype**: Crea productos clonando instancias existentes
+- **Abstract Factory**: Creates products from scratch using classes
+- **Prototype**: Creates products by cloning existing prototypes
 
-### **Abstract Factory vs Singleton**
-- **Abstract Factory**: Típicamente implementado como Singleton
-- **Singleton**: Se puede usar para implementar Concrete Factories
+### **Abstract Factory vs Simple Factory**
+- **Abstract Factory**: Multiple factories for different product families
+- **Simple Factory**: Single factory for creating individual products
 
-## Relación con Otros Patrones
+## Implementation Variants
 
-- **Factory Method**: Abstract Factory usa Factory Methods para crear productos
-- **Singleton**: Concrete Factories suelen ser Singletons
-- **Prototype**: Puede usarse con Abstract Factory para clonar prototipos
-- **Facade**: Abstract Factory puede actuar como Facade para subsistema de creación
-
-## Variantes del Patrón
-
-### 1. **Abstract Factory con Registro**
+### **Registry-based Abstract Factory**
 ```typescript
-class FactoryRegistry {
-    private static factories = new Map<string, FurnitureFactory>();
+type ProductCreator<T> = () => T;
+
+class AbstractFactoryRegistry {
+    private factories = new Map<string, FurnitureFactory>();
     
-    static registerFactory(name: string, factory: FurnitureFactory): void {
+    register(style: string, factory: FurnitureFactory): void {
+        this.factories.set(style, factory);
+    }
+    
+    createFactory(style: string): FurnitureFactory {
+        const factory = this.factories.get(style);
+        if (!factory) {
+            throw new Error(`No factory registered for style: ${style}`);
+        }
+        return factory;
+    }
+    
+    getAvailableStyles(): string[] {
+        return Array.from(this.factories.keys());
+    }
+}
+
+// Usage
+const registry = new AbstractFactoryRegistry();
+registry.register("victorian", new VictorianFurnitureFactory());
+registry.register("modern", new ModernFurnitureFactory());
+registry.register("industrial", new IndustrialFurnitureFactory());
+
+const factory = registry.createFactory("modern");
+const store = new FurnitureStore(factory);
+```
+
+### **Configurable Abstract Factory**
+```typescript
+interface FactoryConfig {
+    theme: string;
+    quality: "budget" | "premium";
+    materials: string[];
+}
+
+class ConfigurableFurnitureFactory implements FurnitureFactory {
+    constructor(private config: FactoryConfig) {}
+    
+    createChair(): Chair {
+        switch (this.config.theme) {
+            case "victorian":
+                return this.config.quality === "premium"
+                    ? new PremiumVictorianChair(this.config.materials)
+                    : new BudgetVictorianChair();
+            case "modern":
+                return this.config.quality === "premium"
+                    ? new PremiumModernChair(this.config.materials)
+                    : new BudgetModernChair();
+            default:
+                throw new Error(`Unknown theme: ${this.config.theme}`);
+        }
+    }
+    
+    createSofa(): Sofa {
+        // Similar implementation for other products
+        // ...
+    }
+    
+    createCoffeeTable(): CoffeeTable {
+        // Similar implementation for other products
+        // ...
+    }
+}
+
+// Usage
+const premiumVictorianConfig: FactoryConfig = {
+    theme: "victorian",
+    quality: "premium",
+    materials: ["mahogany", "velvet", "gold"]
+};
+
+const factory = new ConfigurableFurnitureFactory(premiumVictorianConfig);
+```
+
+### **Dynamic Abstract Factory**
+```typescript
+class DynamicAbstractFactory {
+    private productCreators = new Map<string, Map<string, () => any>>();
+    
+    registerProduct<T>(
+        family: string, 
+        productType: string, 
+        creator: () => T
+    ): void {
+        if (!this.productCreators.has(family)) {
+            this.productCreators.set(family, new Map());
+        }
+        this.productCreators.get(family)!.set(productType, creator);
+    }
+    
+    createProduct<T>(family: string, productType: string): T {
+        const familyCreators = this.productCreators.get(family);
+        if (!familyCreators) {
+            throw new Error(`No creators for family: ${family}`);
+        }
+        
+        const creator = familyCreators.get(productType);
+        if (!creator) {
+            throw new Error(`No creator for ${productType} in ${family} family`);
+        }
+        
+        return creator();
+    }
+    
+    getFamilies(): string[] {
+        return Array.from(this.productCreators.keys());
+    }
+    
+    getProductTypes(family: string): string[] {
+        const familyCreators = this.productCreators.get(family);
+        return familyCreators ? Array.from(familyCreators.keys()) : [];
+    }
+}
+
+// Usage
+const dynamicFactory = new DynamicAbstractFactory();
+
+// Register Victorian family
+dynamicFactory.registerProduct("victorian", "chair", () => new VictorianChair());
+dynamicFactory.registerProduct("victorian", "sofa", () => new VictorianSofa());
+
+// Register Modern family
+dynamicFactory.registerProduct("modern", "chair", () => new ModernChair());
+dynamicFactory.registerProduct("modern", "sofa", () => new ModernSofa());
+
+// Create products
+const victorianChair = dynamicFactory.createProduct<Chair>("victorian", "chair");
+const modernSofa = dynamicFactory.createProduct<Sofa>("modern", "sofa");
+```
+
+## Best Practices
+
+### **Use Dependency Injection**
+```typescript
+class Application {
+    constructor(private furnitureFactory: FurnitureFactory) {}
+    
+    setupRoom(): void {
+        const chair = this.furnitureFactory.createChair();
+        const sofa = this.furnitureFactory.createSofa();
+        const table = this.furnitureFactory.createCoffeeTable();
+        
+        // Use products...
+    }
+}
+
+// Dependency injection container
+class DIContainer {
+    private factories = new Map<string, FurnitureFactory>();
+    
+    registerFactory(name: string, factory: FurnitureFactory): void {
         this.factories.set(name, factory);
     }
     
-    static getFactory(name: string): FurnitureFactory {
-        const factory = this.factories.get(name);
-        if (!factory) throw new Error(`Factory ${name} no encontrada`);
-        return factory;
+    createApplication(factoryName: string): Application {
+        const factory = this.factories.get(factoryName);
+        if (!factory) {
+            throw new Error(`Factory not found: ${factoryName}`);
+        }
+        return new Application(factory);
+    }
+}
+```
+
+### **Validate Product Compatibility**
+```typescript
+abstract class ValidatedFurnitureFactory implements FurnitureFactory {
+    abstract createChair(): Chair;
+    abstract createSofa(): Sofa;
+    abstract createCoffeeTable(): CoffeeTable;
+    
+    createCompleteSet(): FurnitureSet {
+        const chair = this.createChair();
+        const sofa = this.createSofa();
+        const table = this.createCoffeeTable();
+        
+        // Validate that products work well together
+        this.validateCompatibility(chair, sofa, table);
+        
+        return new FurnitureSet(chair, sofa, table);
+    }
+    
+    private validateCompatibility(chair: Chair, sofa: Sofa, table: CoffeeTable): void {
+        // Check dimensions, colors, materials, etc.
+        if (!this.areColorsCompatible(chair, sofa, table)) {
+            throw new Error("Furniture colors are not compatible");
+        }
+        
+        if (!this.areStylesConsistent(chair, sofa, table)) {
+            throw new Error("Furniture styles are not consistent");
+        }
+    }
+    
+    protected abstract areColorsCompatible(chair: Chair, sofa: Sofa, table: CoffeeTable): boolean;
+    protected abstract areStylesConsistent(chair: Chair, sofa: Sofa, table: CoffeeTable): boolean;
+}
+```
+
+### **Handle Factory Selection Logic**
+```typescript
+class FurnitureFactorySelector {
+    static selectFactory(criteria: SelectionCriteria): FurnitureFactory {
+        const { budget, style, room, preferences } = criteria;
+        
+        // Business logic for factory selection
+        if (budget < 1000) {
+            return new BudgetFurnitureFactory(style);
+        }
+        
+        if (room === "office") {
+            return new OfficeFurnitureFactory();
+        }
+        
+        if (preferences.includes("eco-friendly")) {
+            return new EcoFurnitureFactory(style);
+        }
+        
+        // Default to style-based selection
+        switch (style) {
+            case "victorian":
+                return new VictorianFurnitureFactory();
+            case "modern":
+                return new ModernFurnitureFactory();
+            case "industrial":
+                return new IndustrialFurnitureFactory();
+            default:
+                return new ModernFurnitureFactory(); // safe default
+        }
     }
 }
 
-// Uso
-FactoryRegistry.registerFactory('modern', new ModernFurnitureFactory());
-FactoryRegistry.registerFactory('victorian', new VictorianFurnitureFactory());
-
-const factory = FactoryRegistry.getFactory('modern');
-```
-
-### 2. **Abstract Factory con Configuración**
-```typescript
-interface FactoryConfig {
+interface SelectionCriteria {
+    budget: number;
     style: string;
-    materials: string[];
-    priceRange: 'low' | 'medium' | 'high';
-}
-
-abstract class ConfigurableFurnitureFactory {
-    constructor(protected config: FactoryConfig) {}
-    
-    abstract createChair(): Chair;
-    abstract createSofa(): Sofa;
-    abstract createTable(): Table;
+    room: string;
+    preferences: string[];
 }
 ```
 
-### 3. **Abstract Factory con Cache**
-```typescript
-abstract class CachedFurnitureFactory {
-    private cache = new Map<string, Furniture>();
-    
-    protected getCachedProduct<T extends Furniture>(key: string, creator: () => T): T {
-        if (!this.cache.has(key)) {
-            this.cache.set(key, creator());
-        }
-        return this.cache.get(key) as T;
-    }
-}
-```
-
-## Consideraciones de Implementación
-
-### **Extensibilidad**
-```typescript
-// Agregar nueva familia es fácil
-class MinimalistFurnitureFactory extends FurnitureFactory {
-    createChair(): Chair { return new MinimalistChair("Bambú", "Natural"); }
-    createSofa(): Sofa { return new MinimalistSofa("Lino", 2); }
-    createTable(): Table { return new MinimalistTable("Madera clara", 70); }
-}
-
-// Pero agregar nuevo producto requiere modificar todas las factories
-abstract class FurnitureFactory {
-    abstract createChair(): Chair;
-    abstract createSofa(): Sofa;
-    abstract createTable(): Table;
-    abstract createLamp(): Lamp; // ¡Nuevo producto = cambio en todas las factories!
-}
-```
-
-### **Inicialización de Factories**
-```typescript
-// 1. Factory como Singleton
-class ModernFurnitureFactory extends FurnitureFactory {
-    private static instance: ModernFurnitureFactory;
-    
-    static getInstance(): ModernFurnitureFactory {
-        if (!this.instance) {
-            this.instance = new ModernFurnitureFactory();
-        }
-        return this.instance;
-    }
-}
-
-// 2. Factory con Dependency Injection
-class FurnitureStore {
-    constructor(@inject('FurnitureFactory') private factory: FurnitureFactory) {}
-}
-```
-
-El Abstract Factory es especialmente poderoso en sistemas que necesitan garantizar compatibilidad entre múltiples objetos relacionados, como interfaces de usuario, sistemas de temas, o cualquier contexto donde la coherencia entre productos es crítica.
+The Abstract Factory pattern is crucial when you need to ensure that groups of products work well together and want to easily switch between different product families while maintaining consistency.

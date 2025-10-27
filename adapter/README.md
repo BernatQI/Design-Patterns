@@ -1,15 +1,26 @@
-# Patrón Adapter
+# Adapter Pattern
 
-## Diagrama UML
+[🇪🇸 Versión en Español](./README.es.md) | 🇺🇸 English Version
+
+## UML Diagram
 
 ```mermaid
 classDiagram
-    %% Target Interface
+    %% Target Interface (what client expects)
     class IPaymentProcessor {
         <<interface>>
         +processPayment(amount: number, currency: string): PaymentResult
         +validateCard(cardNumber: string): boolean
         +refund(transactionId: string, amount: number): RefundResult
+    }
+
+    %% Client
+    class PaymentService {
+        -processor: IPaymentProcessor
+        +constructor(processor: IPaymentProcessor)
+        +setPaymentProcessor(processor: IPaymentProcessor): void
+        +executePayment(amount: number, currency: string, cardNumber: string): void
+        +executeRefund(transactionId: string, amount: number): void
     }
 
     %% Adapters
@@ -42,293 +53,396 @@ classDiagram
         +createRefund(chargeId: string, refundAmount: number): StripeRefundResult
     }
 
-    %% Client
-    class PaymentService {
-        -processor: IPaymentProcessor
-        +constructor(processor: IPaymentProcessor)
-        +setPaymentProcessor(processor: IPaymentProcessor): void
-        +executePayment(amount: number, currency: string, cardNumber: string): void
-        +executeRefund(transactionId: string, amount: number): void
-    }
-
     %% Relationships
+    PaymentService --> IPaymentProcessor : uses
     PayPalAdapter ..|> IPaymentProcessor : implements
     StripeAdapter ..|> IPaymentProcessor : implements
     PayPalAdapter --> PayPalAPI : adapts
     StripeAdapter --> StripeAPI : adapts
-    PaymentService --> IPaymentProcessor : uses
-    PaymentService ..> PayPalAdapter : can use
-    PaymentService ..> StripeAdapter : can use
 
-    note for PayPalAdapter "Adapter: Traduce interface\nde PayPal a IPaymentProcessor"
-    note for StripeAdapter "Adapter: Traduce interface\nde Stripe a IPaymentProcessor"
-    note for PaymentService "Client: Usa interface uniforme\nsin conocer implementaciones"
+    note for PayPalAdapter "Adapter: Converts PayPal API\nto common interface"
+    note for StripeAdapter "Adapter: Converts Stripe API\nto common interface"
+    note for IPaymentProcessor "Target: Common interface\nexpected by client"
 ```
 
-## ¿Qué es el Patrón Adapter?
+## What is the Adapter Pattern?
 
-El patrón **Adapter** es un patrón de diseño estructural que permite que interfaces incompatibles trabajen juntas. Actúa como un "traductor" entre dos clases que no pueden comunicarse directamente debido a interfaces diferentes.
+The **Adapter** pattern is a structural design pattern that allows **incompatible interfaces to work together**. It acts as a wrapper that translates the interface of one class into another interface that clients expect.
 
-## Problema que Resuelve
+## Problem it Solves
 
-### ❌ Sin Adapter: APIs Incompatibles
+### ❌ Without Adapter: Incompatible APIs
 ```typescript
-// Tu código espera esta interfaz
-interface PaymentProcessor {
+class PaymentService {
+    processPayPalPayment(amount: number): void {
+        // PayPal has its own interface
+        const paypal = new PayPalAPI();
+        const result = paypal.makePayment(amount, "USD");
+        if (result.status === "SUCCESS") {
+            console.log(`PayPal payment successful: ${result.paypal_transaction_id}`);
+        }
+    }
+    
+    processStripePayment(amount: number): void {
+        // Stripe has a different interface
+        const stripe = new StripeAPI();
+        const result = stripe.charge(amount * 100, "usd"); // Stripe uses cents
+        if (result.status === "succeeded") {
+            console.log(`Stripe payment successful: ${result.id}`);
+        }
+    }
+}
+
+// Problems:
+// 1. Different method names and parameters
+// 2. Different response formats
+// 3. Client must know about each API
+// 4. Code duplication and tight coupling
+```
+
+### ✅ With Adapter: Unified Interface
+```typescript
+// Common interface that client expects
+interface IPaymentProcessor {
     processPayment(amount: number, currency: string): PaymentResult;
 }
 
-// Pero PayPal tiene esta interfaz diferente
-class PayPalAPI {
-    makePayment(sum: number, currency: string): PayPalResponse { }
-}
-
-// Y Stripe tiene esta otra interfaz
-class StripeAPI {
-    charge(amount_cents: number, currency_code: string): StripeResult { }
-}
-
-// ¡Incompatibles! No puedes usar ninguna sin reescribir código 😱
-```
-
-### ✅ Con Adapter: Unificación de Interfaces
-```typescript
-// Adapters que traducen las interfaces
-class PayPalAdapter implements PaymentProcessor {
-    private paypal = new PayPalAPI();
+// Adapters translate between interfaces
+class PayPalAdapter implements IPaymentProcessor {
+    private paypalAPI = new PayPalAPI();
     
     processPayment(amount: number, currency: string): PaymentResult {
-        // Traduce: amount → sum, llama makePayment
-        const response = this.paypal.makePayment(amount, currency);
-        // Traduce: PayPalResponse → PaymentResult
-        return this.convertResponse(response);
+        // Translate to PayPal's interface
+        const paypalResult = this.paypalAPI.makePayment(amount, currency);
+        
+        // Translate response to common format
+        return {
+            success: paypalResult.status === "SUCCESS",
+            transactionId: paypalResult.paypal_transaction_id,
+            message: paypalResult.response_message
+        };
     }
 }
 
-class StripeAdapter implements PaymentProcessor {
-    private stripe = new StripeAPI();
+class StripeAdapter implements IPaymentProcessor {
+    private stripeAPI = new StripeAPI();
     
     processPayment(amount: number, currency: string): PaymentResult {
-        // Traduce: amount → amount_cents, currency → currency_code
-        const response = this.stripe.charge(amount * 100, currency);
-        // Traduce: StripeResult → PaymentResult
-        return this.convertResponse(response);
+        // Translate to Stripe's interface (convert to cents)
+        const stripeResult = this.stripeAPI.charge(amount * 100, currency);
+        
+        // Translate response to common format
+        return {
+            success: stripeResult.status === "succeeded",
+            transactionId: stripeResult.id,
+            message: stripeResult.description
+        };
     }
 }
 
-// ¡Ahora tu código funciona con cualquier proveedor! ⚡
+// Now client code is simple and unified
+class PaymentService {
+    constructor(private processor: IPaymentProcessor) {}
+    
+    processPayment(amount: number): void {
+        const result = this.processor.processPayment(amount, "USD");
+        if (result.success) {
+            console.log(`Payment successful: ${result.transactionId}`);
+        }
+    }
+}
+
+// Benefits:
+// 1. Unified interface for all payment providers
+// 2. Easy to switch between providers
+// 3. Client code doesn't change when adding new providers
+// 4. Encapsulates API differences
 ```
 
-## Componentes del Patrón
+## Pattern Components
 
-### 1. **Target** (`IPaymentProcessor`)
-- La interfaz que espera el cliente
-- Define el "contrato" que debe cumplir el adapter
-- Representa la interfaz unificada
+### 1. **Target Interface** (`IPaymentProcessor`)
+- Defines the domain-specific interface that clients use
+- Represents the expected interface
+- Usually matches the client's needs
 
-### 2. **Adaptee** (`PayPalAPI`, `StripeAPI`)
-- La clase existente con interfaz incompatible
-- Generalmente código de terceros que no puedes modificar
-- Contiene la funcionalidad que necesitas usar
+### 2. **Adapter** (`PayPalAdapter`, `StripeAdapter`)
+- Implements the target interface
+- Wraps the adaptee (external API)
+- Translates requests and responses between formats
 
-### 3. **Adapter** (`PayPalAdapter`, `StripeAdapter`)
-- Implementa la interfaz **Target**
-- Contiene una instancia del **Adaptee**
-- Traduce las llamadas entre **Target** y **Adaptee**
+### 3. **Adaptee** (`PayPalAPI`, `StripeAPI`)
+- The existing class with incompatible interface
+- Usually from external libraries or legacy code
+- Contains useful functionality but wrong interface
 
 ### 4. **Client** (`PaymentService`)
-- Usa la interfaz **Target**
-- No conoce los detalles de los **Adaptees**
-- Puede trabajar con cualquier implementación de **Target**
+- Uses objects through the target interface
+- Doesn't know about adapters or adaptees
+- Benefits from unified interface
 
-## Cuándo Usar Adapter
+## When to Use Adapter
 
-✅ **Úsalo cuando:**
-- Quieres usar una clase existente con interfaz incompatible
-- Necesitas integrar bibliotecas de terceros
-- Quieres reutilizar código legacy en nuevos sistemas
-- Debes hacer compatible código que no puedes modificar
-- Necesitas crear una interfaz unificada para múltiples APIs similares
+✅ **Use it when:**
+- You want to use an existing class with incompatible interface
+- You need to integrate third-party libraries with different APIs
+- You're working with legacy code that can't be changed
+- You want to create a unified interface for multiple similar services
+- Different implementations have different signatures
 
-❌ **No lo uses cuando:**
-- Puedes modificar las clases originales
-- Las interfaces ya son compatibles
-- La traducción es más compleja que reescribir
-- Solo necesitas una funcionalidad muy específica
+❌ **Don't use it when:**
+- Interfaces are already compatible
+- You can modify the original classes
+- The adaptation logic is too complex
+- Performance overhead is unacceptable
 
-## Ventajas
+## Advantages
 
-🔌 **Reutilización**: Permite usar código existente sin modificarlo
-🔄 **Intercambiabilidad**: Fácil cambio entre diferentes implementaciones
-🎯 **Interfaz Unificada**: Cliente usa una sola interfaz para múltiples APIs
-🧩 **Integración**: Facilita integración de sistemas heterogéneos
-🛡️ **Aislamiento**: Protege el cliente de cambios en APIs externas
+🔌 **Integration**: Enables incompatible code to work together
+🔄 **Reusability**: Reuses existing functionality without modification
+🎯 **Separation**: Keeps business logic separate from interface conversion
+🔗 **Decoupling**: Client doesn't depend on specific implementations
+📈 **Extensibility**: Easy to add new adapters for new services
 
-## Desventajas
+## Disadvantages
 
-📈 **Complejidad**: Aumenta el número de clases en el sistema
-🐌 **Performance**: Pequeño overhead por la traducción adicional
-🔧 **Mantenimiento**: Cambios en Adaptee pueden requerir actualizar Adapter
-🧠 **Complejidad Lógica**: Traducciones complejas pueden ser difíciles de mantener
+📈 **Code Complexity**: Additional layer of abstraction
+🐌 **Performance**: Extra method calls and object creation
+🧩 **Maintenance**: More classes to maintain
+⚠️ **Error Handling**: Complex error translation between formats
 
-## Tipos de Adapter
+## Real-world Use Cases
 
-### 1. **Object Adapter** (Nuestra implementación)
+### 🗄️ **Database Adapter**
+```typescript
+interface IDatabase {
+    connect(): Promise<void>;
+    query(sql: string, params: any[]): Promise<any[]>;
+    disconnect(): Promise<void>;
+}
+
+class MySQLAdapter implements IDatabase {
+    private mysql = new MySQLDriver();
+    
+    async connect(): Promise<void> {
+        await this.mysql.createConnection(connectionConfig);
+    }
+    
+    async query(sql: string, params: any[]): Promise<any[]> {
+        const result = await this.mysql.execute(sql, params);
+        return result.rows; // Adapt response format
+    }
+}
+
+class MongoAdapter implements IDatabase {
+    private mongo = new MongoClient();
+    
+    async query(sql: string, params: any[]): Promise<any[]> {
+        // Translate SQL to MongoDB query
+        const mongoQuery = this.translateSQLToMongo(sql, params);
+        const result = await this.mongo.find(mongoQuery);
+        return result.toArray(); // Adapt response format
+    }
+}
+```
+
+### 📧 **Email Service Adapter**
+```typescript
+interface IEmailService {
+    sendEmail(to: string, subject: string, body: string): Promise<boolean>;
+}
+
+class SendGridAdapter implements IEmailService {
+    private sendGrid = new SendGridAPI();
+    
+    async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
+        const email = {
+            personalizations: [{ to: [{ email: to }] }],
+            subject: subject,
+            content: [{ type: "text/plain", value: body }]
+        };
+        
+        const result = await this.sendGrid.send(email);
+        return result.statusCode === 202;
+    }
+}
+
+class MailgunAdapter implements IEmailService {
+    private mailgun = new MailgunAPI();
+    
+    async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
+        const result = await this.mailgun.messages.create({
+            to: to,
+            subject: subject,
+            text: body
+        });
+        
+        return result.status === "success";
+    }
+}
+```
+
+### 🎵 **Audio Format Adapter**
+```typescript
+interface IAudioPlayer {
+    play(filename: string): void;
+    stop(): void;
+    setVolume(volume: number): void;
+}
+
+class MP3Adapter implements IAudioPlayer {
+    private mp3Player = new MP3Engine();
+    
+    play(filename: string): void {
+        this.mp3Player.loadFile(filename);
+        this.mp3Player.startPlayback();
+    }
+    
+    setVolume(volume: number): void {
+        // Convert 0-100 to 0.0-1.0
+        this.mp3Player.setGain(volume / 100);
+    }
+}
+
+class WAVAdapter implements IAudioPlayer {
+    private wavPlayer = new WAVEngine();
+    
+    play(filename: string): void {
+        this.wavPlayer.open(filename);
+        this.wavPlayer.begin();
+    }
+    
+    setVolume(volume: number): void {
+        // Convert 0-100 to -60dB to 0dB
+        const db = (volume / 100) * 60 - 60;
+        this.wavPlayer.setDecibels(db);
+    }
+}
+```
+
+## Adapter vs Other Patterns
+
+### **Adapter vs Bridge**
+- **Adapter**: Applied after classes are designed to make incompatible interfaces work
+- **Bridge**: Designed upfront to separate abstraction from implementation
+
+### **Adapter vs Facade**
+- **Adapter**: Changes interface of existing class
+- **Facade**: Provides simplified interface to complex subsystem
+
+### **Adapter vs Decorator**
+- **Adapter**: Changes interface
+- **Decorator**: Keeps same interface but adds functionality
+
+### **Adapter vs Proxy**
+- **Adapter**: Provides different interface
+- **Proxy**: Provides same interface with additional control
+
+## Implementation Variants
+
+### **Object Adapter (Composition)**
 ```typescript
 class PayPalAdapter implements IPaymentProcessor {
-    private paypalAPI: PayPalAPI; // Composición
+    private paypalAPI: PayPalAPI; // Composition
     
     constructor() {
         this.paypalAPI = new PayPalAPI();
     }
     
     processPayment(amount: number, currency: string): PaymentResult {
-        return this.paypalAPI.makePayment(amount, currency);
+        return this.adaptPayPalResponse(
+            this.paypalAPI.makePayment(amount, currency)
+        );
     }
 }
 ```
 
-### 2. **Class Adapter** (Usando herencia múltiple)
+### **Class Adapter (Inheritance)**
 ```typescript
-// No disponible en TypeScript/JavaScript
-// Solo en lenguajes que soportan herencia múltiple como C++
+// Not common in TypeScript due to single inheritance
 class PayPalAdapter extends PayPalAPI implements IPaymentProcessor {
     processPayment(amount: number, currency: string): PaymentResult {
-        return super.makePayment(amount, currency);
+        const paypalResult = this.makePayment(amount, currency); // Inherited method
+        return this.adaptResponse(paypalResult);
     }
 }
 ```
 
-## Ejemplo Práctico: Sistema de Pagos
-
-### Escenario Real
-Una tienda online necesita aceptar pagos de múltiples proveedores:
-
-**Requisitos:**
-- Interfaz unificada para procesar pagos
-- Soporte para PayPal, Stripe, y futuros proveedores
-- Capacidad de cambiar proveedor sin afectar código cliente
-- Validación de tarjetas y manejo de reembolsos
-
-### Flujo de Trabajo
+### **Two-Way Adapter**
 ```typescript
-// 1. Crear adapters para cada proveedor
-const paypalAdapter = new PayPalAdapter();
-const stripeAdapter = new StripeAdapter();
-
-// 2. Crear servicio con adapter inicial
-const paymentService = new PaymentService(paypalAdapter);
-
-// 3. Procesar pago (usando PayPal internamente)
-paymentService.executePayment(99.99, "USD", "4111111111111111");
-
-// 4. Cambiar proveedor dinámicamente
-paymentService.setPaymentProcessor(stripeAdapter);
-
-// 5. Procesar otro pago (usando Stripe internamente)
-paymentService.executePayment(149.99, "EUR", "4242424242424242");
+class TwoWayAdapter implements IPaymentProcessor, PayPalAPI {
+    private paypal: PayPalAPI;
+    private processor: IPaymentProcessor;
+    
+    // IPaymentProcessor methods
+    processPayment(amount: number, currency: string): PaymentResult {
+        return this.adaptPayPalResponse(this.paypal.makePayment(amount, currency));
+    }
+    
+    // PayPalAPI methods
+    makePayment(sum: number, currency: string): PayPalResponse {
+        const result = this.processor.processPayment(sum, currency);
+        return this.adaptToPayPalResponse(result);
+    }
+}
 ```
 
-### Traducción de Interfaces
+## Best Practices
 
-**PayPal → IPaymentProcessor:**
+### **Keep Adapters Simple**
 ```typescript
-// PayPal: makePayment(sum, currency) → PayPalResponse
-// Target: processPayment(amount, currency) → PaymentResult
-
-const paypalResponse = this.paypalAPI.makePayment(amount, currency);
-return {
-    success: paypalResponse.status === "SUCCESS",
-    transactionId: paypalResponse.paypal_transaction_id,
-    message: paypalResponse.response_message
-};
-```
-
-**Stripe → IPaymentProcessor:**
-```typescript
-// Stripe: charge(amount_cents, currency_code) → StripeChargeResult  
-// Target: processPayment(amount, currency) → PaymentResult
-
-const stripeResponse = this.stripeAPI.charge(amount * 100, currency);
-return {
-    success: stripeResponse.status === "succeeded",
-    transactionId: stripeResponse.id,
-    message: stripeResponse.description
-};
-```
-
-## Casos de Uso Reales
-
-### 💳 **Pasarelas de Pago**
-```typescript
-// Diferentes proveedores con APIs diferentes
-const adapters = [
-    new PayPalAdapter(),
-    new StripeAdapter(), 
-    new SquareAdapter(),
-    new AuthorizeNetAdapter()
-];
-```
-
-### 📧 **Servicios de Email**
-```typescript
-// Unificar diferentes APIs de email
-interface EmailService {
-    sendEmail(to: string, subject: string, body: string): void;
+// Good: Simple translation
+class SimpleAdapter implements ITarget {
+    constructor(private adaptee: Adaptee) {}
+    
+    targetMethod(): string {
+        return this.adaptee.differentMethod();
+    }
 }
 
-class SendGridAdapter implements EmailService { }
-class MailChimpAdapter implements EmailService { }
-class AmazonSESAdapter implements EmailService { }
-```
-
-### 🗄️ **Bases de Datos**
-```typescript
-// Diferentes drivers de DB con interfaz común
-interface DatabaseConnection {
-    query(sql: string): Result[];
-    insert(table: string, data: object): boolean;
+// Avoid: Complex business logic in adapter
+class ComplexAdapter implements ITarget {
+    targetMethod(): string {
+        // Avoid putting business logic here
+        const result = this.adaptee.differentMethod();
+        const processed = this.complexBusinessLogic(result);
+        return this.moreBusinessLogic(processed);
+    }
 }
-
-class MySQLAdapter implements DatabaseConnection { }
-class PostgreSQLAdapter implements DatabaseConnection { }
-class MongoDBAdapter implements DatabaseConnection { }
 ```
 
-### 📊 **APIs de Analytics**
+### **Handle Error Translation**
 ```typescript
-// Diferentes proveedores de analytics
-interface AnalyticsService {
-    trackEvent(event: string, properties: object): void;
-    trackPageView(page: string): void;
+class PaymentAdapter implements IPaymentProcessor {
+    processPayment(amount: number, currency: string): PaymentResult {
+        try {
+            const result = this.paypalAPI.makePayment(amount, currency);
+            
+            if (result.status === "FAILED") {
+                return {
+                    success: false,
+                    error: this.translatePayPalError(result.error_code)
+                };
+            }
+            
+            return { success: true, transactionId: result.paypal_transaction_id };
+        } catch (paypalError) {
+            return {
+                success: false,
+                error: this.handlePayPalException(paypalError)
+            };
+        }
+    }
+    
+    private translatePayPalError(errorCode: string): string {
+        const errorMap = {
+            "INSUFFICIENT_FUNDS": "Insufficient funds in account",
+            "INVALID_CARD": "Invalid card number",
+            "EXPIRED_CARD": "Card has expired"
+        };
+        return errorMap[errorCode] || "Unknown payment error";
+    }
 }
-
-class GoogleAnalyticsAdapter implements AnalyticsService { }
-class MixpanelAdapter implements AnalyticsService { }
-class SegmentAdapter implements AnalyticsService { }
 ```
 
-## Adapter vs Otros Patrones
-
-### **Adapter vs Bridge**
-- **Adapter**: Hace compatibles interfaces existentes incompatibles
-- **Bridge**: Diseñado desde el inicio para separar abstracción e implementación
-
-### **Adapter vs Decorator**
-- **Adapter**: Cambia la interfaz de un objeto
-- **Decorator**: Mantiene la interfaz pero añade funcionalidad
-
-### **Adapter vs Facade**
-- **Adapter**: Hace compatible una interfaz específica
-- **Facade**: Simplifica una interfaz compleja
-
-### **Adapter vs Proxy**
-- **Adapter**: Traduce interfaces diferentes
-- **Proxy**: Controla acceso a un objeto con la misma interfaz
-
-## Relación con Otros Patrones
-
-- **Strategy**: Adapters pueden ser strategies intercambiables
-- **Factory**: Factory puede crear adapters apropiados
-- **Bridge**: Adapter puede ser usado en el lado de implementación de Bridge
-- **Composite**: Adapters pueden adaptar objetos en estructuras Composite
+The Adapter pattern is essential for integrating third-party libraries, legacy systems, and services with incompatible interfaces, providing a clean separation between your application and external dependencies.

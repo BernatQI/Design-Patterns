@@ -1,6 +1,8 @@
-# Patrón Prototype
+# Prototype Pattern
 
-## Diagrama UML
+[🇪🇸 Versión en Español](./README.es.md) | 🇺🇸 English Version
+
+## UML Diagram
 
 ```mermaid
 classDiagram
@@ -25,7 +27,7 @@ classDiagram
         +getInfo(): string
     }
 
-    %% Registry
+    %% Registry/Manager
     class DocumentRegistry {
         -prototypes: Map~string, Document~
         +registerPrototype(key: string, prototype: Document): void
@@ -38,107 +40,402 @@ classDiagram
     DocumentRegistry --> Document : manages prototypes
     DocumentRegistry ..> Document : creates clones
 
-    note for Document "Prototype: Implementa clonación\nEvita inicialización costosa"
-    note for DocumentRegistry "Registry: Almacena prototipos\nreutilizables"
+    note for Document "Concrete prototype that implements\ncloning with expensive initialization"
+    note for DocumentRegistry "Registry to manage and clone\nprototype instances"
+    note for IPrototype "Generic interface for\ncloneable objects"
 ```
 
-## ¿Qué es el Patrón Prototype?
+## What is the Prototype Pattern?
 
-El patrón **Prototype** es un patrón de diseño creacional que permite crear nuevos objetos clonando instancias existentes en lugar de crearlos desde cero. Es especialmente útil cuando la creación de un objeto es costosa en términos de tiempo o recursos.
+The **Prototype** pattern is a creational design pattern that allows you to **copy existing objects** without making your code dependent on their concrete classes. Instead of creating objects from scratch, it creates new instances by cloning prototypes.
 
-## Problema que Resuelve
+## Problem it Solves
 
-### ❌ Sin Prototype
+### ❌ Without Prototype: Expensive Object Creation
 ```typescript
-// Cada documento requiere inicialización costosa
-for(let i = 0; i < 1000; i++) {
-    const doc = new Document("Reporte", "Contenido");
-    // Carga plantillas, valida, configura metadata... (500ms cada uno)
-    // Total: 1000 × 500ms = 8.3 minutos 😱
+class ReportSystem {
+    createMonthlyReport(): Document {
+        // PROBLEM! Expensive initialization every time
+        const report = new Document("Monthly Report", "Base content");
+        
+        // Expensive operations repeated for each instance:
+        // - Load templates from database
+        // - Validate document structure  
+        // - Configure complex metadata
+        // - Setup formatting rules
+        
+        report.addMetadata("type", "report");
+        report.addMetadata("department", "general");
+        // ... many more expensive operations
+        
+        return report; // Slow creation process
+    }
+}
+
+// Problems:
+// 1. Expensive initialization on every creation
+// 2. Repetitive configuration code
+// 3. Tight coupling to concrete classes
+// 4. Difficult to maintain complex object creation
+```
+
+### ✅ With Prototype: Fast Object Cloning
+```typescript
+class DocumentRegistry {
+    private prototypes = new Map<string, Document>();
+    
+    constructor() {
+        // Create prototypes once (expensive)
+        const reportPrototype = new Document("Report Template", "Base structure");
+        // ... expensive initialization
+        this.prototypes.set("report", reportPrototype);
+    }
+    
+    createDocument(type: string): Document {
+        const prototype = this.prototypes.get(type);
+        return prototype.clone(); // Fast cloning!
+    }
+}
+
+// Benefits:
+// 1. Expensive initialization only once
+// 2. Fast object creation through cloning
+// 3. Reuse of complex configurations
+// 4. Decouples client from concrete classes
+```
+
+## Pattern Components
+
+### 1. **Prototype Interface** (`IPrototype`)
+- Declares the cloning method common to all prototypes
+- Usually contains a single `clone()` method
+- Can be generic to work with different types
+
+### 2. **Concrete Prototype** (`Document`)
+- Implements the prototype interface
+- Provides the actual cloning implementation
+- Handles deep copying of complex internal state
+
+### 3. **Registry/Manager** (`DocumentRegistry`)
+- Manages a collection of prototype instances
+- Provides convenient access to prototypes
+- Can include factory methods for creation
+
+### 4. **Client**
+- Creates new objects by requesting clones from prototypes
+- Doesn't need to know concrete classes
+- Works with objects through the prototype interface
+
+## Implementation Variants
+
+### 1. **Simple Cloning**
+```typescript
+class SimpleDocument implements IPrototype<SimpleDocument> {
+    constructor(private title: string, private content: string) {}
+    
+    clone(): SimpleDocument {
+        return new SimpleDocument(this.title, this.content);
+    }
 }
 ```
 
-### ✅ Con Prototype
+### 2. **Deep Cloning with Complex State**
 ```typescript
-// Crear prototipo una vez (500ms)
-const prototype = new Document("Plantilla", "Base");
-
-// Clonar rápidamente (1ms cada uno)
-for(let i = 0; i < 1000; i++) {
-    const doc = prototype.clone(); // Solo 1ms
-    doc.setTitle(`Reporte ${i}`);
-    // Total: 500ms + (1000 × 1ms) = 1.5 segundos ⚡
+class ComplexDocument implements IPrototype<ComplexDocument> {
+    private metadata: Map<string, string>;
+    
+    clone(): ComplexDocument {
+        const cloned = Object.create(Object.getPrototypeOf(this));
+        cloned.title = this.title;
+        cloned.metadata = new Map(this.metadata); // Deep copy
+        return cloned;
+    }
 }
 ```
 
-## Componentes del Patrón
+### 3. **Registry Pattern**
+```typescript
+class PrototypeRegistry<T extends IPrototype<T>> {
+    private prototypes = new Map<string, T>();
+    
+    register(key: string, prototype: T): void {
+        this.prototypes.set(key, prototype);
+    }
+    
+    create(key: string): T | null {
+        const prototype = this.prototypes.get(key);
+        return prototype ? prototype.clone() : null;
+    }
+}
+```
 
-### 1. **IPrototype<T>** (Prototype Interface)
-- Define el método `clone()` que debe implementar todo prototipo
-- Genérico para permitir diferentes tipos de objetos
+## When to Use Prototype
 
-### 2. **Document** (Concrete Prototype)
-- Implementa la interfaz `IPrototype`
-- Contiene la lógica de clonación específica
-- Maneja la copia profunda de estructuras complejas (como Maps)
+✅ **Use it when:**
+- Object creation is expensive (database access, network calls, complex calculations)
+- You need many similar objects with slight variations
+- You want to avoid subclasses of creator classes
+- Object configuration is complex and should be reused
+- Runtime object composition is required
 
-### 3. **DocumentRegistry** (Prototype Registry)
-- Almacena prototipos pre-configurados
-- Permite crear objetos por nombre/clave
-- Centraliza la gestión de prototipos
+❌ **Don't use it when:**
+- Objects are simple and cheap to create
+- You rarely need copies of objects
+- Object cloning is more complex than direct creation
+- Deep copying causes performance issues
 
-## Cuándo Usar Prototype
+## Advantages
 
-✅ **Úsalo cuando:**
-- La creación de objetos es costosa (DB, red, cálculos complejos)
-- Necesitas muchos objetos similares con pequeñas variaciones
-- Quieres evitar jerarquías complejas de Factory
-- Los objetos tienen configuraciones complejas difíciles de recrear
+⚡ **Performance**: Avoids expensive object initialization
+🔄 **Flexibility**: Easy to create object variations
+🎯 **Decoupling**: Client doesn't depend on concrete classes
+📋 **Configuration Reuse**: Complex setups can be shared
+🔗 **Runtime Composition**: Dynamic object creation
 
-❌ **No lo uses cuando:**
-- Los objetos son simples y baratos de crear
-- Las instancias no comparten configuración común
-- La clonación es más compleja que la creación directa
+## Disadvantages
 
-## Ventajas
+🧩 **Complex Cloning**: Deep copying can be complicated
+📈 **Memory Usage**: Keeping prototypes in memory
+🔍 **Maintenance**: Changes in prototypes affect all clones
+⚠️ **Circular References**: Can cause cloning issues
 
-🚀 **Rendimiento**: Evita operaciones costosas de inicialización
-🔧 **Flexibilidad**: Permite configuraciones dinámicas en runtime
-🎯 **Simplicidad**: Cliente no necesita conocer clases concretas
-♻️ **Reutilización**: Configuraciones complejas se reutilizan fácilmente
+## Practical Example: Document System
 
-## Desventajas
+### Real-world Scenario
+A document management system needs to create different types of documents:
 
-⚠️ **Clonación Compleja**: Objetos con referencias circulares son difíciles de clonar
-🧠 **Memoria**: Mantener prototipos consume memoria adicional
-🔍 **Debugging**: Más difícil rastrear el origen de objetos clonados
+**Document Types:**
+- **Reports**: Corporate reports with standard structure
+- **Contracts**: Legal documents with predefined terms
+- **Proposals**: Business proposals with templates
+- **Invoices**: Billing documents with calculations
 
-## Ejemplo Práctico: Sistema de Documentos
+### Complete Workflow
+```typescript
+// 1. Setup prototype registry
+const registry = new DocumentRegistry();
 
-En nuestro ejemplo, simulamos un sistema donde crear documentos desde cero es costoso:
+// 2. Register prototypes (expensive operations done once)
+const reportPrototype = new Document("Report Template", "Standard structure");
+reportPrototype.addMetadata("type", "report");
+reportPrototype.addMetadata("department", "general");
+registry.registerPrototype("report", reportPrototype);
 
-1. **Carga de plantillas** desde base de datos
-2. **Validación** de formatos y esquemas
-3. **Configuración** de metadata predeterminada
-4. **Inicialización** de estructuras internas
+// 3. Create documents quickly by cloning
+const monthlyReport = registry.createDocument("report");
+if (monthlyReport) {
+    monthlyReport.setTitle("October 2025 Report");
+    monthlyReport.setContent("Monthly activity summary");
+    // Ready to use!
+}
+```
 
-### Flujo de Trabajo
+### Performance Comparison
+```typescript
+// Traditional Creation (slow)
+function createTraditional(): Document {
+    const doc = new Document("Report", "Content");
+    // Expensive initialization...
+    return doc; // ~200ms
+}
 
-1. Se crean prototipos "dorados" una sola vez
-2. Se registran en el `DocumentRegistry`
-3. Cuando se necesita un documento, se clona del prototipo
-4. Se personaliza el clon según necesidades específicas
+// Prototype Creation (fast)
+function createWithPrototype(registry: DocumentRegistry): Document {
+    return registry.createDocument("report"); // ~5ms
+}
 
-### Casos de Uso Reales
+// 40x faster with prototypes!
+```
 
-- **Configuración de servidores**: Templates de VMs en la nube
-- **Emails masivos**: Plantillas de marketing personalizadas  
-- **Videojuegos**: NPCs con comportamientos base
-- **Documentos legales**: Contratos con cláusulas estándar
+## Real-world Use Cases
 
-## Relación con Otros Patrones
+### 🎮 **Game Object Creation**
+```typescript
+class GameObjectPrototype implements IPrototype<GameObjectPrototype> {
+    constructor(
+        private sprite: string,
+        private animations: Animation[],
+        private stats: Stats
+    ) {}
+    
+    clone(): GameObjectPrototype {
+        return new GameObjectPrototype(
+            this.sprite,
+            [...this.animations], // Clone animations
+            { ...this.stats }     // Clone stats
+        );
+    }
+}
 
-- **vs Factory Method**: Prototype usa clonación, Factory usa construcción
-- **vs Builder**: Prototype clona objetos complejos, Builder los construye paso a paso
-- **con Singleton**: Registry puede ser Singleton para acceso global
-- **con Command**: Comandos complejos pueden ser prototipos
+// Usage
+const enemyRegistry = new PrototypeRegistry<GameObjectPrototype>();
+enemyRegistry.register("goblin", goblinPrototype);
+enemyRegistry.register("orc", orcPrototype);
+
+// Spawn enemies quickly
+const goblin1 = enemyRegistry.create("goblin");
+const goblin2 = enemyRegistry.create("goblin");
+```
+
+### 🌐 **Network Configuration**
+```typescript
+class NetworkConfig implements IPrototype<NetworkConfig> {
+    constructor(
+        private servers: Server[],
+        private loadBalancer: LoadBalancer,
+        private securityRules: SecurityRule[]
+    ) {}
+    
+    clone(): NetworkConfig {
+        return new NetworkConfig(
+            this.servers.map(s => s.clone()),
+            this.loadBalancer.clone(),
+            this.securityRules.map(r => r.clone())
+        );
+    }
+}
+
+// Create environment configurations
+const prodConfig = registry.create("production");
+const testConfig = registry.create("testing");
+```
+
+### 🎨 **UI Component Templates**
+```typescript
+class ComponentTemplate implements IPrototype<ComponentTemplate> {
+    constructor(
+        private styles: CSSStyles,
+        private layout: Layout,
+        private bindings: DataBinding[]
+    ) {}
+    
+    clone(): ComponentTemplate {
+        return new ComponentTemplate(
+            { ...this.styles },
+            this.layout.clone(),
+            this.bindings.map(b => b.clone())
+        );
+    }
+}
+
+// Create component variations
+const buttonTemplate = registry.create("button");
+const primaryButton = buttonTemplate.clone();
+primaryButton.setStyle("background", "blue");
+```
+
+### 🏭 **Manufacturing Process Templates**
+```typescript
+class ProcessTemplate implements IPrototype<ProcessTemplate> {
+    constructor(
+        private steps: ProcessStep[],
+        private quality: QualityControl,
+        private resources: Resource[]
+    ) {}
+    
+    clone(): ProcessTemplate {
+        return new ProcessTemplate(
+            this.steps.map(s => s.clone()),
+            this.quality.clone(),
+            this.resources.map(r => r.clone())
+        );
+    }
+}
+
+// Create process variations for different products
+const standardProcess = registry.create("standard");
+const premiumProcess = registry.create("premium");
+```
+
+## Prototype vs Other Patterns
+
+### **Prototype vs Factory Method**
+- **Prototype**: Creates objects by cloning existing instances
+- **Factory Method**: Creates objects using constructors and configuration
+
+### **Prototype vs Abstract Factory**
+- **Prototype**: Clones individual objects
+- **Abstract Factory**: Creates families of related objects
+
+### **Prototype vs Builder**
+- **Prototype**: Creates objects through cloning
+- **Builder**: Constructs objects step by step
+
+### **Prototype vs Singleton**
+- **Prototype**: Creates multiple similar instances
+- **Singleton**: Ensures only one instance exists
+
+## Relationship with Other Patterns
+
+- **Abstract Factory**: Can use Prototype to create product families
+- **Command**: Commands can be stored as prototypes for undo functionality
+- **Composite**: Tree structures can be cloned as prototypes
+- **Decorator**: Decorated objects can serve as prototypes
+
+## Implementation Considerations
+
+### **Deep vs Shallow Cloning**
+```typescript
+class DocumentWithAttachments implements IPrototype<DocumentWithAttachments> {
+    private attachments: File[];
+    
+    // Shallow clone (shares attachments)
+    shallowClone(): DocumentWithAttachments {
+        const clone = Object.create(Object.getPrototypeOf(this));
+        clone.attachments = this.attachments; // Shared reference
+        return clone;
+    }
+    
+    // Deep clone (copies attachments)
+    clone(): DocumentWithAttachments {
+        const clone = Object.create(Object.getPrototypeOf(this));
+        clone.attachments = this.attachments.map(f => f.copy()); // Deep copy
+        return clone;
+    }
+}
+```
+
+### **Cloning with Immutable Objects**
+```typescript
+class ImmutableDocument implements IPrototype<ImmutableDocument> {
+    constructor(
+        private readonly title: string,
+        private readonly content: string,
+        private readonly metadata: ReadonlyMap<string, string>
+    ) {}
+    
+    clone(): ImmutableDocument {
+        // Immutable objects can safely share references
+        return new ImmutableDocument(
+            this.title,
+            this.content,
+            this.metadata
+        );
+    }
+    
+    withTitle(newTitle: string): ImmutableDocument {
+        return new ImmutableDocument(newTitle, this.content, this.metadata);
+    }
+}
+```
+
+### **Registry with Lazy Loading**
+```typescript
+class LazyPrototypeRegistry {
+    private prototypes = new Map<string, () => Document>();
+    
+    register(key: string, factory: () => Document): void {
+        this.prototypes.set(key, factory);
+    }
+    
+    create(key: string): Document | null {
+        const factory = this.prototypes.get(key);
+        if (!factory) return null;
+        
+        const prototype = factory(); // Create prototype on demand
+        return prototype.clone();
+    }
+}
+```
+
+The Prototype pattern is especially useful in scenarios where object creation is expensive and you need multiple similar instances with slight variations, providing significant performance improvements and flexible object creation.

@@ -1,30 +1,24 @@
-# Patrón Builder
+# Builder Pattern
 
-## Diagrama UML
+[🇪🇸 Versión en Español](./README.es.md) | 🇺🇸 English Version
+
+## UML Diagram
 
 ```mermaid
 classDiagram
-    %% Product - Objeto complejo a construir
+    %% Product
     class Computer {
-        -cpu: string
-        -ram: number
-        -storage: string
-        -gpu: string
         -motherboard: string
+        -processor: string
+        -memory: string
+        -storage: string
+        -graphicsCard: string
         -powerSupply: string
-        -coolingSystem: string
         -case: string
+        -operatingSystem: string
         +constructor()
-        +setCPU(cpu: string): void
-        +setRAM(ram: number): void
-        +setStorage(storage: string): void
-        +setGPU(gpu: string): void
-        +setMotherboard(mb: string): void
-        +setPowerSupply(ps: string): void
-        +setCoolingSystem(cooling: string): void
-        +setCase(case: string): void
-        +getSpecifications(): string
-        +isComplete(): boolean
+        +getSpecs(): string
+        +toString(): string
     }
 
     %% Abstract Builder
@@ -32,44 +26,44 @@ classDiagram
         <<abstract>>
         #computer: Computer
         +constructor()
-        +reset(): ComputerBuilder*
-        +buildCPU(): ComputerBuilder*
-        +buildRAM(): ComputerBuilder*
-        +buildStorage(): ComputerBuilder*
-        +buildGPU(): ComputerBuilder*
-        +buildMotherboard(): ComputerBuilder*
-        +buildPowerSupply(): ComputerBuilder*
-        +buildCoolingSystem(): ComputerBuilder*
-        +buildCase(): ComputerBuilder*
-        +getResult(): Computer
+        +reset(): ComputerBuilder
+        +setMotherboard(motherboard: string): ComputerBuilder
+        +setProcessor(processor: string): ComputerBuilder
+        +setMemory(memory: string): ComputerBuilder
+        +setStorage(storage: string): ComputerBuilder
+        +setGraphicsCard(graphics: string): ComputerBuilder
+        +setPowerSupply(power: string): ComputerBuilder
+        +setCase(case: string): ComputerBuilder
+        +setOperatingSystem(os: string): ComputerBuilder
+        +build(): Computer
     }
 
-    %% Concrete Builders
+    %% Concrete Builder
     class ConcreteComputerBuilder {
         +constructor()
-        +reset(): ComputerBuilder
-        +buildCPU(): ComputerBuilder
-        +buildRAM(): ComputerBuilder
-        +buildStorage(): ComputerBuilder
-        +buildGPU(): ComputerBuilder
-        +buildMotherboard(): ComputerBuilder
-        +buildPowerSupply(): ComputerBuilder
-        +buildCoolingSystem(): ComputerBuilder
-        +buildCase(): ComputerBuilder
-        +getResult(): Computer
+        +setMotherboard(motherboard: string): ComputerBuilder
+        +setProcessor(processor: string): ComputerBuilder
+        +setMemory(memory: string): ComputerBuilder
+        +setStorage(storage: string): ComputerBuilder
+        +setGraphicsCard(graphics: string): ComputerBuilder
+        +setPowerSupply(power: string): ComputerBuilder
+        +setCase(case: string): ComputerBuilder
+        +setOperatingSystem(os: string): ComputerBuilder
+        +build(): Computer
     }
 
+    %% Fluent Builder
     class FluentComputerBuilder {
+        -computer: Computer
         +constructor()
-        +reset(): FluentComputerBuilder
-        +withCPU(cpu: string): FluentComputerBuilder
-        +withRAM(ram: number): FluentComputerBuilder
-        +withStorage(storage: string): FluentComputerBuilder
-        +withGPU(gpu: string): FluentComputerBuilder
-        +withMotherboard(mb: string): FluentComputerBuilder
-        +withPowerSupply(ps: string): FluentComputerBuilder
-        +withCoolingSystem(cooling: string): FluentComputerBuilder
-        +withCase(case: string): FluentComputerBuilder
+        +motherboard(motherboard: string): FluentComputerBuilder
+        +processor(processor: string): FluentComputerBuilder
+        +memory(memory: string): FluentComputerBuilder
+        +storage(storage: string): FluentComputerBuilder
+        +graphicsCard(graphics: string): FluentComputerBuilder
+        +powerSupply(power: string): FluentComputerBuilder
+        +case(case: string): FluentComputerBuilder
+        +operatingSystem(os: string): FluentComputerBuilder
         +build(): Computer
     }
 
@@ -81,703 +75,853 @@ classDiagram
         +buildGamingComputer(): Computer
         +buildOfficeComputer(): Computer
         +buildServerComputer(): Computer
-        +buildCustomComputer(specs: ComputerSpecs): Computer
-    }
-
-    %% Configuration classes
-    class ComputerSpecs {
-        +cpuType: string
-        +ramAmount: number
-        +storageType: string
-        +needsGPU: boolean
-        +useCase: string
-        +budget: number
-        +constructor(config: Partial~ComputerSpecs~)
+        +buildWorkstationComputer(): Computer
     }
 
     %% Relationships
     ConcreteComputerBuilder --|> ComputerBuilder : extends
-    FluentComputerBuilder --|> ComputerBuilder : extends
-    ComputerBuilder ..> Computer : creates
+    ComputerBuilder --> Computer : builds
+    ConcreteComputerBuilder --> Computer : creates
+    FluentComputerBuilder --> Computer : creates
     ComputerDirector --> ComputerBuilder : uses
-    ComputerDirector ..> Computer : orchestrates creation
-    ComputerDirector --> ComputerSpecs : uses for configuration
+    ComputerDirector --> Computer : creates
 
-    %% Creation relationships
-    ConcreteComputerBuilder ..> Computer : builds step by step
-    FluentComputerBuilder ..> Computer : builds with fluent interface
-
-    note for ComputerBuilder "Builder abstracto: Define pasos\npara construir producto complejo"
-    note for ComputerDirector "Director: Define orden de construcción\ny configuraciones predefinidas"
-    note for Computer "Producto: Objeto complejo con\nmúltiples componentes"
-    note for FluentComputerBuilder "Variante: Interface fluida\npara mejor experiencia de usuario"
+    note for ComputerBuilder "Abstract Builder:\nDefines building steps"
+    note for ConcreteComputerBuilder "Concrete Builder:\nImplements specific\nbuilding logic"
+    note for ComputerDirector "Director:\nEncapsulates complex\nconstruction algorithms"
+    note for FluentComputerBuilder "Fluent Interface:\nAllows method chaining\nfor readable code"
 ```
 
-## ¿Qué es el Patrón Builder?
+## What is the Builder Pattern?
 
-El patrón **Builder** es un patrón de diseño creacional que permite construir objetos complejos **paso a paso**. Te permite crear diferentes representaciones del mismo objeto usando el mismo proceso de construcción.
+The **Builder** pattern is a creational design pattern that allows you to **construct complex objects step by step**. It lets you create different types and representations of an object using the same construction code.
 
-## Problema que Resuelve
+## Problem it Solves
 
-### ❌ Sin Builder: Constructor Telescópico y Complejidad
+### ❌ Without Builder: Telescoping Constructor Problem
 ```typescript
 class Computer {
     constructor(
-        cpu: string,
-        ram: number,
-        storage: string,
-        gpu?: string,          // Opcional
-        motherboard?: string,  // Opcional
-        powerSupply?: string,  // Opcional
-        coolingSystem?: string, // Opcional
-        case?: string,         // Opcional
-        bluRayDrive?: boolean, // Opcional
-        wifiCard?: boolean,    // Opcional
-        soundCard?: string     // Opcional
+        motherboard?: string,
+        processor?: string,
+        memory?: string,
+        storage?: string,
+        graphicsCard?: string,
+        powerSupply?: string,
+        computerCase?: string,
+        operatingSystem?: string
     ) {
-        // 11 parámetros! 😱
+        this.motherboard = motherboard || "";
+        this.processor = processor || "";
+        this.memory = memory || "";
+        this.storage = storage || "";
+        this.graphicsCard = graphicsCard || "";
+        this.powerSupply = powerSupply || "";
+        this.case = computerCase || "";
+        this.operatingSystem = operatingSystem || "";
+    }
+    
+    // Problems with this approach:
+    // 1. Too many constructor parameters
+    // 2. Parameter order matters and is confusing
+    // 3. Optional parameters lead to many constructor overloads
+    // 4. Hard to remember parameter positions
+    // 5. Easy to pass parameters in wrong order
+}
+
+// Confusing usage
+const computer1 = new Computer("ATX", "Intel i7", "16GB", "1TB SSD");
+const computer2 = new Computer("ATX", "Intel i7", "16GB", "1TB SSD", "RTX 3080");
+const computer3 = new Computer("ATX", "Intel i7", "16GB", "1TB SSD", "RTX 3080", "750W", "Mid Tower");
+
+// What was the 5th parameter again? Graphics card or power supply?
+const computer4 = new Computer("ATX", "Intel i7", "16GB", "1TB SSD", "750W"); // Wrong!
+```
+
+### ✅ With Builder: Step-by-Step Construction
+```typescript
+class ComputerBuilder {
+    private computer = new Computer();
+    
+    setMotherboard(motherboard: string): ComputerBuilder {
+        this.computer.motherboard = motherboard;
+        return this;
+    }
+    
+    setProcessor(processor: string): ComputerBuilder {
+        this.computer.processor = processor;
+        return this;
+    }
+    
+    setMemory(memory: string): ComputerBuilder {
+        this.computer.memory = memory;
+        return this;
+    }
+    
+    setStorage(storage: string): ComputerBuilder {
+        this.computer.storage = storage;
+        return this;
+    }
+    
+    setGraphicsCard(graphics: string): ComputerBuilder {
+        this.computer.graphicsCard = graphics;
+        return this;
+    }
+    
+    build(): Computer {
+        return this.computer;
     }
 }
 
-// Problemas del uso:
-// 1. Constructor imposible de recordar
-const computer1 = new Computer(
-    "Intel i7", 16, "SSD 1TB", 
-    undefined, undefined, undefined, undefined, undefined,
-    false, true, undefined
-); // ¿Qué significan todos esos undefined?
+// Clear, readable usage
+const computer = new ComputerBuilder()
+    .setMotherboard("ASUS ROG Strix X570-E")
+    .setProcessor("AMD Ryzen 9 5900X")
+    .setMemory("32GB DDR4-3600")
+    .setStorage("2TB NVMe SSD")
+    .setGraphicsCard("NVIDIA RTX 4080")
+    .build();
 
-// 2. Múltiples constructores (telescópico)
-class Computer {
-    constructor(cpu: string, ram: number, storage: string) {}
-    constructor(cpu: string, ram: number, storage: string, gpu: string) {}
-    constructor(cpu: string, ram: number, storage: string, gpu: string, motherboard: string) {}
-    // ... ¡Explosión combinatoria!
-}
-
-// 3. Objeto inconsistente durante construcción
-const computer = new Computer("Intel i7", 16, "SSD 1TB");
-computer.gpu = "RTX 4080"; // Objeto mutable, estado inconsistente
+// Benefits:
+// 1. Clear, readable construction
+// 2. Optional parameters easy to handle
+// 3. Parameter order doesn't matter
+// 4. Self-documenting code
+// 5. Can validate during construction
 ```
 
-### ✅ Con Builder: Construcción Clara y Flexible
-```typescript
-// 1. Construcción paso a paso con claridad
-const gamingComputer = new ComputerBuilder()
-    .reset()
-    .buildCPU()        // Intel i9 para gaming
-    .buildRAM()        // 32GB para gaming
-    .buildStorage()    // NVMe SSD rápido
-    .buildGPU()        // RTX 4090
-    .buildCoolingSystem() // Liquid cooling
-    .getResult();
-
-// 2. Interface fluida más legible
-const officeComputer = new FluentComputerBuilder()
-    .withCPU("Intel i5-13600K")
-    .withRAM(16)
-    .withStorage("SSD 512GB")
-    .withCase("Mid Tower")
-    .build(); // No necesita GPU para oficina
-
-// 3. Director para configuraciones predefinidas
-const director = new ComputerDirector(new ConcreteComputerBuilder());
-const serverComputer = director.buildServerComputer();
-
-// Beneficios:
-// 1. Construcción clara y expresiva
-// 2. Diferentes representaciones del mismo proceso
-// 3. Control total sobre el proceso de construcción
-// 4. Objeto inmutable una vez construido
-```
-
-## Componentes del Patrón
+## Pattern Components
 
 ### 1. **Product** (`Computer`)
-- El objeto complejo que se está construyendo
-- Puede tener diferentes representaciones
-- Una vez construido, es típicamente inmutable
+- Complex object being constructed
+- Contains multiple parts/properties
+- Usually has many optional or required components
 
-### 2. **Builder** (`ComputerBuilder`)
-- Define interfaz abstracta para construir partes del Product
-- Declara pasos comunes para todas las implementaciones
-- Mantiene referencia al producto en construcción
+### 2. **Abstract Builder** (`ComputerBuilder`)
+- Defines interface for creating product parts
+- Declares building steps common to all builders
+- Usually returns builder for method chaining
 
-### 3. **Concrete Builder** (`ConcreteComputerBuilder`, `FluentComputerBuilder`)
-- Implementa interfaz Builder para construir y ensamblar partes
-- Define y mantiene la representación que crea
-- Proporciona interfaz para recuperar el producto
+### 3. **Concrete Builder** (`ConcreteComputerBuilder`)
+- Implements abstract builder interface
+- Constructs and assembles product parts
+- Provides method to retrieve final result
 
 ### 4. **Director** (`ComputerDirector`)
-- Define el orden en que ejecutar los pasos de construcción
-- Puede tener varios métodos para diferentes configuraciones
-- Trabaja con Builder a través de su interfaz común
+- Knows how to construct products using builder
+- Encapsulates complex construction algorithms
+- Can create different product configurations
 
-## Variantes del Patrón
+### 5. **Fluent Interface** (Optional)
+- Allows method chaining for readable code
+- Each method returns the builder instance
+- Makes client code more expressive
 
-### 1. **Builder Clásico con Director**
+## When to Use Builder
+
+✅ **Use it when:**
+- Creating complex objects with many optional parameters
+- You want to avoid telescoping constructors
+- Object construction requires multiple steps
+- You need different representations of the same object
+- Construction process should be independent of parts
+
+❌ **Don't use it when:**
+- Object is simple with few parameters
+- Construction is straightforward
+- You don't need different representations
+- The overhead isn't justified
+
+## Advantages
+
+🏗️ **Clear Construction**: Step-by-step object building
+📖 **Readability**: Self-documenting construction process
+🔧 **Flexibility**: Easy to add/remove construction steps
+🎯 **Reusability**: Same builder for different product variations
+✅ **Validation**: Can validate during construction
+
+## Disadvantages
+
+📈 **Code Complexity**: More classes and interfaces
+🧩 **Overhead**: May be overkill for simple objects
+🔄 **Maintenance**: More code to maintain
+💾 **Memory**: Additional objects in memory
+
+## Real-world Use Cases
+
+### 🏠 **SQL Query Builder**
+```typescript
+interface SQLQuery {
+    toString(): string;
+    getParameters(): any[];
+}
+
+class SelectQueryBuilder {
+    private query = {
+        select: [] as string[],
+        from: "",
+        joins: [] as string[],
+        where: [] as string[],
+        groupBy: [] as string[],
+        having: [] as string[],
+        orderBy: [] as string[],
+        limit: 0,
+        offset: 0,
+        parameters: [] as any[]
+    };
+    
+    select(...columns: string[]): SelectQueryBuilder {
+        this.query.select.push(...columns);
+        return this;
+    }
+    
+    from(table: string): SelectQueryBuilder {
+        this.query.from = table;
+        return this;
+    }
+    
+    join(table: string, condition: string): SelectQueryBuilder {
+        this.query.joins.push(`JOIN ${table} ON ${condition}`);
+        return this;
+    }
+    
+    leftJoin(table: string, condition: string): SelectQueryBuilder {
+        this.query.joins.push(`LEFT JOIN ${table} ON ${condition}`);
+        return this;
+    }
+    
+    where(condition: string, ...params: any[]): SelectQueryBuilder {
+        this.query.where.push(condition);
+        this.query.parameters.push(...params);
+        return this;
+    }
+    
+    groupBy(...columns: string[]): SelectQueryBuilder {
+        this.query.groupBy.push(...columns);
+        return this;
+    }
+    
+    orderBy(column: string, direction: "ASC" | "DESC" = "ASC"): SelectQueryBuilder {
+        this.query.orderBy.push(`${column} ${direction}`);
+        return this;
+    }
+    
+    limit(count: number): SelectQueryBuilder {
+        this.query.limit = count;
+        return this;
+    }
+    
+    offset(count: number): SelectQueryBuilder {
+        this.query.offset = count;
+        return this;
+    }
+    
+    build(): SQLQuery {
+        let sql = `SELECT ${this.query.select.join(", ")}`;
+        sql += ` FROM ${this.query.from}`;
+        
+        if (this.query.joins.length > 0) {
+            sql += ` ${this.query.joins.join(" ")}`;
+        }
+        
+        if (this.query.where.length > 0) {
+            sql += ` WHERE ${this.query.where.join(" AND ")}`;
+        }
+        
+        if (this.query.groupBy.length > 0) {
+            sql += ` GROUP BY ${this.query.groupBy.join(", ")}`;
+        }
+        
+        if (this.query.orderBy.length > 0) {
+            sql += ` ORDER BY ${this.query.orderBy.join(", ")}`;
+        }
+        
+        if (this.query.limit > 0) {
+            sql += ` LIMIT ${this.query.limit}`;
+        }
+        
+        if (this.query.offset > 0) {
+            sql += ` OFFSET ${this.query.offset}`;
+        }
+        
+        return {
+            toString: () => sql,
+            getParameters: () => [...this.query.parameters]
+        };
+    }
+}
+
+// Usage
+const query = new SelectQueryBuilder()
+    .select("u.name", "u.email", "p.title")
+    .from("users u")
+    .leftJoin("posts p", "p.user_id = u.id")
+    .where("u.active = ?", true)
+    .where("u.created_at > ?", new Date("2023-01-01"))
+    .groupBy("u.id")
+    .orderBy("u.name", "ASC")
+    .limit(50)
+    .build();
+
+console.log(query.toString());
+// SELECT u.name, u.email, p.title FROM users u 
+// LEFT JOIN posts p ON p.user_id = u.id 
+// WHERE u.active = ? AND u.created_at > ? 
+// GROUP BY u.id ORDER BY u.name ASC LIMIT 50
+```
+
+### 🌐 **HTTP Request Builder**
+```typescript
+interface HttpRequest {
+    url: string;
+    method: string;
+    headers: Record<string, string>;
+    body?: any;
+    timeout: number;
+    retries: number;
+}
+
+class HttpRequestBuilder {
+    private request: Partial<HttpRequest> = {
+        method: "GET",
+        headers: {},
+        timeout: 5000,
+        retries: 0
+    };
+    
+    url(url: string): HttpRequestBuilder {
+        this.request.url = url;
+        return this;
+    }
+    
+    method(method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"): HttpRequestBuilder {
+        this.request.method = method;
+        return this;
+    }
+    
+    header(name: string, value: string): HttpRequestBuilder {
+        this.request.headers![name] = value;
+        return this;
+    }
+    
+    headers(headers: Record<string, string>): HttpRequestBuilder {
+        Object.assign(this.request.headers!, headers);
+        return this;
+    }
+    
+    json(data: any): HttpRequestBuilder {
+        this.request.body = JSON.stringify(data);
+        this.request.headers!["Content-Type"] = "application/json";
+        return this;
+    }
+    
+    form(data: Record<string, any>): HttpRequestBuilder {
+        const formData = new URLSearchParams(data);
+        this.request.body = formData.toString();
+        this.request.headers!["Content-Type"] = "application/x-www-form-urlencoded";
+        return this;
+    }
+    
+    timeout(ms: number): HttpRequestBuilder {
+        this.request.timeout = ms;
+        return this;
+    }
+    
+    retries(count: number): HttpRequestBuilder {
+        this.request.retries = count;
+        return this;
+    }
+    
+    auth(token: string): HttpRequestBuilder {
+        this.request.headers!["Authorization"] = `Bearer ${token}`;
+        return this;
+    }
+    
+    basicAuth(username: string, password: string): HttpRequestBuilder {
+        const encoded = btoa(`${username}:${password}`);
+        this.request.headers!["Authorization"] = `Basic ${encoded}`;
+        return this;
+    }
+    
+    build(): HttpRequest {
+        if (!this.request.url) {
+            throw new Error("URL is required");
+        }
+        
+        return this.request as HttpRequest;
+    }
+}
+
+// Usage
+const request = new HttpRequestBuilder()
+    .url("https://api.example.com/users")
+    .method("POST")
+    .auth("your-jwt-token")
+    .json({ name: "John Doe", email: "john@example.com" })
+    .timeout(10000)
+    .retries(3)
+    .build();
+
+// Usage for different scenarios
+const getRequest = new HttpRequestBuilder()
+    .url("https://api.example.com/data")
+    .header("Accept", "application/json")
+    .timeout(5000)
+    .build();
+
+const formRequest = new HttpRequestBuilder()
+    .url("https://api.example.com/contact")
+    .method("POST")
+    .form({ name: "John", message: "Hello" })
+    .build();
+```
+
+### 🏗️ **Document Builder**
+```typescript
+interface Document {
+    title: string;
+    content: Section[];
+    metadata: DocumentMetadata;
+    toHTML(): string;
+    toPDF(): Buffer;
+    toMarkdown(): string;
+}
+
+interface Section {
+    type: "heading" | "paragraph" | "list" | "table" | "image";
+    content: any;
+    level?: number;
+}
+
+interface DocumentMetadata {
+    author: string;
+    created: Date;
+    tags: string[];
+    template: string;
+}
+
+class DocumentBuilder {
+    private document: Partial<Document> = {
+        content: [],
+        metadata: {
+            author: "",
+            created: new Date(),
+            tags: [],
+            template: "default"
+        }
+    };
+    
+    title(title: string): DocumentBuilder {
+        this.document.title = title;
+        return this;
+    }
+    
+    author(author: string): DocumentBuilder {
+        this.document.metadata!.author = author;
+        return this;
+    }
+    
+    tags(...tags: string[]): DocumentBuilder {
+        this.document.metadata!.tags.push(...tags);
+        return this;
+    }
+    
+    template(template: string): DocumentBuilder {
+        this.document.metadata!.template = template;
+        return this;
+    }
+    
+    heading(text: string, level: number = 1): DocumentBuilder {
+        this.document.content!.push({
+            type: "heading",
+            content: text,
+            level
+        });
+        return this;
+    }
+    
+    paragraph(text: string): DocumentBuilder {
+        this.document.content!.push({
+            type: "paragraph",
+            content: text
+        });
+        return this;
+    }
+    
+    list(items: string[], ordered: boolean = false): DocumentBuilder {
+        this.document.content!.push({
+            type: "list",
+            content: { items, ordered }
+        });
+        return this;
+    }
+    
+    table(headers: string[], rows: string[][]): DocumentBuilder {
+        this.document.content!.push({
+            type: "table",
+            content: { headers, rows }
+        });
+        return this;
+    }
+    
+    image(url: string, alt: string, caption?: string): DocumentBuilder {
+        this.document.content!.push({
+            type: "image",
+            content: { url, alt, caption }
+        });
+        return this;
+    }
+    
+    build(): Document {
+        if (!this.document.title) {
+            throw new Error("Document title is required");
+        }
+        
+        return {
+            ...this.document,
+            toHTML: () => this.generateHTML(),
+            toPDF: () => this.generatePDF(),
+            toMarkdown: () => this.generateMarkdown()
+        } as Document;
+    }
+    
+    private generateHTML(): string {
+        // Implementation for HTML generation
+        return "<html>...</html>";
+    }
+    
+    private generatePDF(): Buffer {
+        // Implementation for PDF generation
+        return Buffer.from("PDF content");
+    }
+    
+    private generateMarkdown(): string {
+        // Implementation for Markdown generation
+        return "# Markdown content";
+    }
+}
+
+// Usage
+const report = new DocumentBuilder()
+    .title("Quarterly Sales Report")
+    .author("John Smith")
+    .tags("sales", "quarterly", "2024")
+    .template("corporate")
+    .heading("Executive Summary")
+    .paragraph("This quarter showed remarkable growth...")
+    .heading("Sales Data", 2)
+    .table(
+        ["Month", "Revenue", "Growth"],
+        [
+            ["January", "$100k", "5%"],
+            ["February", "$120k", "8%"],
+            ["March", "$140k", "12%"]
+        ]
+    )
+    .heading("Conclusion", 2)
+    .paragraph("Based on the data presented...")
+    .build();
+
+const htmlOutput = report.toHTML();
+const pdfOutput = report.toPDF();
+```
+
+## Builder Variants
+
+### **Classic Builder with Director**
 ```typescript
 class ComputerDirector {
-    private builder: ComputerBuilder;
-    
-    constructor(builder: ComputerBuilder) {
-        this.builder = builder;
-    }
+    constructor(private builder: ComputerBuilder) {}
     
     buildGamingComputer(): Computer {
         return this.builder
             .reset()
-            .buildCPU()      // High-end CPU
-            .buildRAM()      // 32GB RAM
-            .buildGPU()      // Gaming GPU
-            .buildStorage()  // Fast SSD
-            .getResult();
+            .setMotherboard("ASUS ROG Strix X570-E")
+            .setProcessor("AMD Ryzen 9 5900X")
+            .setMemory("32GB DDR4-3600")
+            .setStorage("1TB NVMe SSD")
+            .setGraphicsCard("NVIDIA RTX 4080")
+            .setPowerSupply("850W Gold")
+            .setCase("NZXT H710")
+            .setOperatingSystem("Windows 11 Pro")
+            .build();
     }
     
     buildOfficeComputer(): Computer {
         return this.builder
             .reset()
-            .buildCPU()      // Mid-range CPU
-            .buildRAM()      // 16GB RAM
-            .buildStorage()  // Standard SSD
-            .getResult();    // No GPU needed
+            .setMotherboard("MSI B450M Pro")
+            .setProcessor("AMD Ryzen 5 3600")
+            .setMemory("16GB DDR4-3200")
+            .setStorage("512GB SSD")
+            .setPowerSupply("500W Bronze")
+            .setCase("Corsair MicroATX")
+            .setOperatingSystem("Windows 11")
+            .build();
     }
 }
+
+// Usage with director
+const builder = new ConcreteComputerBuilder();
+const director = new ComputerDirector(builder);
+
+const gamingPC = director.buildGamingComputer();
+const officePC = director.buildOfficeComputer();
 ```
 
-### 2. **Fluent Builder (Sin Director)**
+### **Fluent Interface Builder**
 ```typescript
 class FluentComputerBuilder {
-    private computer: Computer;
+    private computer = new Computer();
     
-    constructor() {
-        this.computer = new Computer();
+    motherboard(motherboard: string): FluentComputerBuilder {
+        this.computer.motherboard = motherboard;
+        return this;
     }
     
-    withCPU(cpu: string): FluentComputerBuilder {
-        this.computer.setCPU(cpu);
-        return this; // ¡Clave! Retorna this para encadenar
+    processor(processor: string): FluentComputerBuilder {
+        this.computer.processor = processor;
+        return this;
     }
     
-    withRAM(ram: number): FluentComputerBuilder {
-        this.computer.setRAM(ram);
+    memory(memory: string): FluentComputerBuilder {
+        this.computer.memory = memory;
         return this;
     }
     
     build(): Computer {
-        // Validaciones opcionales
-        if (!this.computer.isComplete()) {
-            throw new Error("Computer incompleto");
-        }
         return this.computer;
     }
 }
 
-// Uso encadenado
+// Fluent usage
 const computer = new FluentComputerBuilder()
-    .withCPU("Intel i7")
-    .withRAM(16)
-    .withStorage("SSD 1TB")
+    .motherboard("ASUS Prime X570-P")
+    .processor("AMD Ryzen 7 5800X")
+    .memory("16GB DDR4")
     .build();
 ```
 
-### 3. **Builder con Validación**
+### **Step Builder (Enforced Order)**
 ```typescript
-class ValidatedComputerBuilder extends ComputerBuilder {
-    buildCPU(): ComputerBuilder {
-        // Validación: CPU compatible con motherboard
-        if (this.computer.motherboard && !this.isCompatible(cpu, this.computer.motherboard)) {
-            throw new Error("CPU incompatible con motherboard");
-        }
-        this.computer.setCPU("Intel i7-13700K");
-        return this;
-    }
-    
-    private isCompatible(cpu: string, motherboard: string): boolean {
-        // Lógica de compatibilidad
-        return true;
-    }
-}
-```
-
-### 4. **Builder con Configuración**
-```typescript
-interface ComputerConfiguration {
-    useCase: 'gaming' | 'office' | 'server' | 'workstation';
-    budget: number;
-    preferences: {
-        brand?: 'intel' | 'amd';
-        priority?: 'performance' | 'efficiency' | 'quiet';
-    };
+interface MotherboardStep {
+    motherboard(motherboard: string): ProcessorStep;
 }
 
-class ConfigurableComputerBuilder extends ComputerBuilder {
-    constructor(private config: ComputerConfiguration) {
-        super();
-    }
-    
-    buildCPU(): ComputerBuilder {
-        const cpu = this.selectCPUBasedOnConfig();
-        this.computer.setCPU(cpu);
-        return this;
-    }
-    
-    private selectCPUBasedOnConfig(): string {
-        if (this.config.useCase === 'gaming') {
-            return this.config.preferences.brand === 'amd' 
-                ? "AMD Ryzen 7 7800X3D" 
-                : "Intel i7-13700K";
-        }
-        // ... más lógica
-    }
+interface ProcessorStep {
+    processor(processor: string): MemoryStep;
 }
-```
 
-## Cuándo Usar Builder
-
-✅ **Úsalo cuando:**
-- Necesitas crear objetos complejos con muchos pasos
-- El proceso de construcción debe permitir diferentes representaciones
-- Quieres evitar constructores con muchos parámetros
-- El objeto debe construirse paso a paso
-- Necesitas construir árboles de objetos complejos o estructuras compuestas
-
-❌ **No lo uses cuando:**
-- El objeto es simple y no justifica la complejidad adicional
-- El objeto no tiene múltiples representaciones
-- El proceso de construcción no varía
-
-## Ventajas
-
-🎯 **Single Responsibility**: Separa construcción compleja de representación
-🔓 **Código Reutilizable**: Puedes usar el mismo código para crear diferentes representaciones
-📖 **Legibilidad**: Hace el código más legible y expresivo
-🛡️ **Control**: Control fino sobre el proceso de construcción
-🔄 **Flexibilidad**: Diferentes builders para diferentes representaciones
-
-## Desventajas
-
-📈 **Complejidad**: Aumenta complejidad general del código
-🏗️ **Más Código**: Requiere crear múltiples clases nuevas
-⚡ **Overhead**: Puede ser excesivo para objetos simples
-
-## Ejemplo Práctico: Sistema de Computadoras
-
-### Escenario Real
-Una tienda de computadoras personalizada necesita ensamblar diferentes tipos de sistemas:
-
-**Tipos de Sistemas:**
-- **Gaming**: Alto rendimiento, GPU potente, enfriamiento líquido
-- **Oficina**: Eficiencia energética, sin GPU, componentes estándar
-- **Servidor**: Múltiples CPUs, RAM masiva, almacenamiento redundante
-- **Workstation**: Balance entre potencia y estabilidad
-
-### Flujo Completo
-```typescript
-// 1. Configuración de directores especializados
-const director = new ComputerDirector(new ConcreteComputerBuilder());
-
-// 2. Crear diferentes configuraciones
-const gamingPC = director.buildGamingComputer();
-console.log("🎮 Gaming PC:");
-console.log(gamingPC.getSpecifications());
-
-const officePC = director.buildOfficeComputer();
-console.log("💼 Office PC:");
-console.log(officePC.getSpecifications());
-
-// 3. Construcción personalizada
-const customPC = new FluentComputerBuilder()
-    .withCPU("AMD Ryzen 9 7950X")
-    .withRAM(64)
-    .withStorage("NVMe SSD 2TB")
-    .withGPU("RTX 4090")
-    .withCoolingSystem("Custom Loop")
-    .build();
-
-console.log("🔧 Custom PC:");
-console.log(customPC.getSpecifications());
-
-// 4. Configuración basada en presupuesto
-const budgetSpecs = new ComputerSpecs({
-    useCase: 'gaming',
-    budget: 1500,
-    cpuType: 'mid-range',
-    needsGPU: true
-});
-
-const budgetPC = director.buildCustomComputer(budgetSpecs);
-```
-
-### Validación y Compatibilidad
-```typescript
-class SmartComputerBuilder extends ComputerBuilder {
-    private compatibility = new CompatibilityChecker();
-    
-    buildGPU(): ComputerBuilder {
-        const gpu = "RTX 4080";
-        
-        // Verificar compatibilidad con PSU
-        if (!this.compatibility.checkPowerRequirements(gpu, this.computer.powerSupply)) {
-            throw new Error("GPU requiere fuente de poder más potente");
-        }
-        
-        // Verificar compatibilidad con case
-        if (!this.compatibility.checkPhysicalFit(gpu, this.computer.case)) {
-            throw new Error("GPU no cabe en el case seleccionado");
-        }
-        
-        this.computer.setGPU(gpu);
-        return this;
-    }
+interface MemoryStep {
+    memory(memory: string): OptionalStep;
 }
-```
 
-## Casos de Uso Reales
+interface OptionalStep {
+    storage(storage: string): OptionalStep;
+    graphicsCard(graphics: string): OptionalStep;
+    powerSupply(power: string): OptionalStep;
+    build(): Computer;
+}
 
-### 🌐 **Constructor de Consultas SQL**
-```typescript
-class SQLQueryBuilder {
-    private query: string[] = [];
+class StepComputerBuilder implements MotherboardStep, ProcessorStep, MemoryStep, OptionalStep {
+    private computer = new Computer();
     
-    select(columns: string[]): SQLQueryBuilder {
-        this.query.push(`SELECT ${columns.join(', ')}`);
+    motherboard(motherboard: string): ProcessorStep {
+        this.computer.motherboard = motherboard;
         return this;
     }
     
-    from(table: string): SQLQueryBuilder {
-        this.query.push(`FROM ${table}`);
+    processor(processor: string): MemoryStep {
+        this.computer.processor = processor;
         return this;
     }
     
-    where(condition: string): SQLQueryBuilder {
-        this.query.push(`WHERE ${condition}`);
+    memory(memory: string): OptionalStep {
+        this.computer.memory = memory;
         return this;
     }
     
-    orderBy(column: string, direction: 'ASC' | 'DESC' = 'ASC'): SQLQueryBuilder {
-        this.query.push(`ORDER BY ${column} ${direction}`);
+    storage(storage: string): OptionalStep {
+        this.computer.storage = storage;
         return this;
     }
     
-    build(): string {
-        return this.query.join(' ');
+    graphicsCard(graphics: string): OptionalStep {
+        this.computer.graphicsCard = graphics;
+        return this;
+    }
+    
+    powerSupply(power: string): OptionalStep {
+        this.computer.powerSupply = power;
+        return this;
+    }
+    
+    build(): Computer {
+        return this.computer;
+    }
+    
+    static start(): MotherboardStep {
+        return new StepComputerBuilder();
     }
 }
 
-// Uso
-const query = new SQLQueryBuilder()
-    .select(['name', 'email', 'age'])
-    .from('users')
-    .where('age > 18')
-    .orderBy('name')
-    .build();
-
-console.log(query); // "SELECT name, email, age FROM users WHERE age > 18 ORDER BY name ASC"
-```
-
-### 🏠 **Constructor de Formularios HTML**
-```typescript
-class FormBuilder {
-    private form: HTMLFormElement;
-    
-    constructor() {
-        this.form = document.createElement('form');
-    }
-    
-    withAction(action: string): FormBuilder {
-        this.form.action = action;
-        return this;
-    }
-    
-    withMethod(method: 'GET' | 'POST'): FormBuilder {
-        this.form.method = method;
-        return this;
-    }
-    
-    addTextField(name: string, placeholder?: string): FormBuilder {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.name = name;
-        if (placeholder) input.placeholder = placeholder;
-        this.form.appendChild(input);
-        return this;
-    }
-    
-    addSubmitButton(text: string): FormBuilder {
-        const button = document.createElement('button');
-        button.type = 'submit';
-        button.textContent = text;
-        this.form.appendChild(button);
-        return this;
-    }
-    
-    build(): HTMLFormElement {
-        return this.form;
-    }
-}
-
-// Uso
-const loginForm = new FormBuilder()
-    .withAction('/login')
-    .withMethod('POST')
-    .addTextField('username', 'Usuario')
-    .addTextField('password', 'Contraseña')
-    .addSubmitButton('Iniciar Sesión')
+// Enforced step order
+const computer = StepComputerBuilder
+    .start()
+    .motherboard("ASUS Prime") // Required first
+    .processor("Intel i7")     // Required second
+    .memory("16GB")            // Required third
+    .storage("1TB SSD")        // Optional
+    .graphicsCard("RTX 4070")  // Optional
     .build();
 ```
 
-### 📧 **Constructor de Emails**
-```typescript
-class EmailBuilder {
-    private email: Email = new Email();
-    
-    to(recipients: string[]): EmailBuilder {
-        this.email.setRecipients(recipients);
-        return this;
-    }
-    
-    from(sender: string): EmailBuilder {
-        this.email.setSender(sender);
-        return this;
-    }
-    
-    subject(subject: string): EmailBuilder {
-        this.email.setSubject(subject);
-        return this;
-    }
-    
-    body(content: string): EmailBuilder {
-        this.email.setBody(content);
-        return this;
-    }
-    
-    withAttachment(file: File): EmailBuilder {
-        this.email.addAttachment(file);
-        return this;
-    }
-    
-    withPriority(priority: 'low' | 'normal' | 'high'): EmailBuilder {
-        this.email.setPriority(priority);
-        return this;
-    }
-    
-    asHTML(): EmailBuilder {
-        this.email.setContentType('text/html');
-        return this;
-    }
-    
-    send(): Promise<void> {
-        return this.email.send();
-    }
-}
-
-// Uso
-await new EmailBuilder()
-    .to(['user@example.com'])
-    .from('system@company.com')
-    .subject('Bienvenido al sistema')
-    .body('<h1>¡Hola!</h1><p>Gracias por registrarte.</p>')
-    .asHTML()
-    .withPriority('high')
-    .send();
-```
-
-### 🧪 **Constructor de Tests**
-```typescript
-class TestSuiteBuilder {
-    private suite: TestSuite = new TestSuite();
-    
-    withName(name: string): TestSuiteBuilder {
-        this.suite.setName(name);
-        return this;
-    }
-    
-    addTest(name: string, testFn: () => void): TestSuiteBuilder {
-        this.suite.addTest(new Test(name, testFn));
-        return this;
-    }
-    
-    withSetup(setupFn: () => void): TestSuiteBuilder {
-        this.suite.setSetup(setupFn);
-        return this;
-    }
-    
-    withTeardown(teardownFn: () => void): TestSuiteBuilder {
-        this.suite.setTeardown(teardownFn);
-        return this;
-    }
-    
-    withTimeout(ms: number): TestSuiteBuilder {
-        this.suite.setTimeout(ms);
-        return this;
-    }
-    
-    build(): TestSuite {
-        return this.suite;
-    }
-}
-
-// Uso
-const userTests = new TestSuiteBuilder()
-    .withName('User Management Tests')
-    .withSetup(() => createTestDatabase())
-    .withTeardown(() => cleanupTestDatabase())
-    .addTest('should create user', () => {
-        const user = createUser('John');
-        expect(user.name).toBe('John');
-    })
-    .addTest('should delete user', () => {
-        const user = createUser('Jane');
-        deleteUser(user.id);
-        expect(findUser(user.id)).toBeNull();
-    })
-    .withTimeout(5000)
-    .build();
-```
-
-### 🎮 **Constructor de Personajes de Videojuego**
-```typescript
-class CharacterBuilder {
-    private character: GameCharacter = new GameCharacter();
-    
-    withName(name: string): CharacterBuilder {
-        this.character.setName(name);
-        return this;
-    }
-    
-    withClass(characterClass: CharacterClass): CharacterBuilder {
-        this.character.setClass(characterClass);
-        return this;
-    }
-    
-    withStats(stats: CharacterStats): CharacterBuilder {
-        this.character.setStats(stats);
-        return this;
-    }
-    
-    withSkill(skill: Skill): CharacterBuilder {
-        this.character.addSkill(skill);
-        return this;
-    }
-    
-    withEquipment(equipment: Equipment): CharacterBuilder {
-        this.character.addEquipment(equipment);
-        return this;
-    }
-    
-    withLevel(level: number): CharacterBuilder {
-        this.character.setLevel(level);
-        return this;
-    }
-    
-    build(): GameCharacter {
-        this.character.calculateFinalStats();
-        return this.character;
-    }
-}
-
-// Uso
-const warrior = new CharacterBuilder()
-    .withName("Sir Lancelot")
-    .withClass(CharacterClass.WARRIOR)
-    .withStats({ strength: 18, agility: 12, intelligence: 8 })
-    .withSkill(new Skill("Sword Mastery", 5))
-    .withSkill(new Skill("Shield Block", 3))
-    .withEquipment(new Weapon("Excalibur", WeaponType.SWORD))
-    .withEquipment(new Armor("Plate Mail", ArmorType.HEAVY))
-    .withLevel(10)
-    .build();
-```
-
-## Builder vs Otros Patrones
-
-### **Builder vs Abstract Factory**
-- **Builder**: Construye objetos complejos paso a paso
-- **Abstract Factory**: Crea familias de objetos relacionados de una vez
+## Builder vs Other Patterns
 
 ### **Builder vs Factory Method**
-- **Builder**: Se enfoca en construcción paso a paso
-- **Factory Method**: Se enfoca en creación de diferentes tipos
+- **Builder**: Constructs complex objects step by step
+- **Factory Method**: Creates objects in one step
 
-### **Builder vs Prototype**
-- **Builder**: Construye objetos desde cero
-- **Prototype**: Crea objetos clonando prototipos existentes
+### **Builder vs Abstract Factory**
+- **Builder**: Focuses on constructing single complex objects
+- **Abstract Factory**: Creates families of related simple objects
 
-## Relación con Otros Patrones
+### **Builder vs Composite**
+- **Builder**: Constructs objects that may have composite structure
+- **Composite**: Represents tree structures of objects
 
-- **Abstract Factory**: Puede usar Builder para construir productos complejos
-- **Composite**: Builder puede construir árboles Composite
-- **Strategy**: Builder puede usar Strategy para diferentes algoritmos de construcción
-- **Template Method**: La construcción puede seguir Template Method
+### **Builder vs Strategy**
+- **Builder**: Different ways to construct objects
+- **Strategy**: Different algorithms for same operation
 
-## Consideraciones de Implementación
+## Best Practices
 
-### **Inmutabilidad**
+### **Validate Required Fields**
 ```typescript
-class ImmutableComputerBuilder {
-    private readonly computer: Computer;
+class ValidatedComputerBuilder {
+    private computer = new Computer();
+    private requiredFields = new Set(["motherboard", "processor", "memory"]);
+    private setFields = new Set<string>();
     
-    constructor(computer?: Computer) {
-        this.computer = computer || new Computer();
-    }
-    
-    withCPU(cpu: string): ImmutableComputerBuilder {
-        const newComputer = this.computer.clone();
-        newComputer.setCPU(cpu);
-        return new ImmutableComputerBuilder(newComputer);
-    }
-    
-    // Cada operación retorna un nuevo builder
-}
-```
-
-### **Validación Progresiva**
-```typescript
-class ValidatingComputerBuilder {
-    private errors: string[] = [];
-    
-    buildCPU(): ComputerBuilder {
-        if (!this.isValidCPU(this.selectedCPU)) {
-            this.errors.push("CPU inválido");
+    setMotherboard(motherboard: string): ValidatedComputerBuilder {
+        if (!motherboard.trim()) {
+            throw new Error("Motherboard cannot be empty");
         }
+        this.computer.motherboard = motherboard;
+        this.setFields.add("motherboard");
         return this;
     }
     
-    getResult(): Computer {
-        if (this.errors.length > 0) {
-            throw new ValidationError(`Errores de construcción: ${this.errors.join(', ')}`);
+    setProcessor(processor: string): ValidatedComputerBuilder {
+        if (!processor.trim()) {
+            throw new Error("Processor cannot be empty");
         }
+        this.computer.processor = processor;
+        this.setFields.add("processor");
+        return this;
+    }
+    
+    setMemory(memory: string): ValidatedComputerBuilder {
+        if (!memory.trim()) {
+            throw new Error("Memory cannot be empty");
+        }
+        this.computer.memory = memory;
+        this.setFields.add("memory");
+        return this;
+    }
+    
+    build(): Computer {
+        // Validate required fields
+        const missingFields = Array.from(this.requiredFields)
+            .filter(field => !this.setFields.has(field));
+        
+        if (missingFields.length > 0) {
+            throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
+        }
+        
         return this.computer;
     }
 }
 ```
 
-### **Builder Genérico**
+### **Use Method Overloading for Flexibility**
 ```typescript
-class GenericBuilder<T> {
-    private instance: T;
+class FlexibleComputerBuilder {
+    private computer = new Computer();
     
-    constructor(constructor: new () => T) {
-        this.instance = new constructor();
-    }
-    
-    with<K extends keyof T>(property: K, value: T[K]): GenericBuilder<T> {
-        this.instance[property] = value;
+    // Method overloading for different parameter types
+    storage(capacity: number, type: "HDD" | "SSD" = "SSD"): FlexibleComputerBuilder;
+    storage(description: string): FlexibleComputerBuilder;
+    storage(capacityOrDescription: number | string, type?: "HDD" | "SSD"): FlexibleComputerBuilder {
+        if (typeof capacityOrDescription === "number") {
+            this.computer.storage = `${capacityOrDescription}GB ${type}`;
+        } else {
+            this.computer.storage = capacityOrDescription;
+        }
         return this;
     }
     
-    build(): T {
-        return this.instance;
+    // Convenience methods
+    ssdStorage(capacity: number): FlexibleComputerBuilder {
+        return this.storage(capacity, "SSD");
+    }
+    
+    hddStorage(capacity: number): FlexibleComputerBuilder {
+        return this.storage(capacity, "HDD");
+    }
+    
+    build(): Computer {
+        return this.computer;
     }
 }
 
-// Uso
-const user = new GenericBuilder(User)
-    .with('name', 'John')
-    .with('email', 'john@example.com')
-    .with('age', 30)
+// Usage
+const computer1 = new FlexibleComputerBuilder()
+    .ssdStorage(1000)  // 1000GB SSD
+    .build();
+
+const computer2 = new FlexibleComputerBuilder()
+    .storage("2TB NVMe SSD")  // Custom description
     .build();
 ```
 
-El patrón Builder es especialmente útil cuando necesitas crear objetos complejos con múltiples configuraciones posibles, ofreciendo una interfaz clara y flexible para la construcción paso a paso.
+### **Implement Reset for Reusability**
+```typescript
+class ReusableComputerBuilder {
+    private computer = new Computer();
+    
+    reset(): ReusableComputerBuilder {
+        this.computer = new Computer();
+        return this;
+    }
+    
+    setMotherboard(motherboard: string): ReusableComputerBuilder {
+        this.computer.motherboard = motherboard;
+        return this;
+    }
+    
+    // ... other methods
+    
+    build(): Computer {
+        const result = this.computer;
+        this.reset(); // Auto-reset after build
+        return result;
+    }
+}
+
+// Reusable builder
+const builder = new ReusableComputerBuilder();
+
+const computer1 = builder
+    .setMotherboard("ASUS")
+    .setProcessor("Intel i7")
+    .build();
+
+// Builder is automatically reset
+const computer2 = builder
+    .setMotherboard("MSI")
+    .setProcessor("AMD Ryzen")
+    .build();
+```
+
+The Builder pattern is essential for creating complex objects with many optional parameters, providing a clear and flexible construction process that's easy to read and maintain.

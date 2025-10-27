@@ -1,141 +1,143 @@
-# 🎯 Patrones de Diseño - Design Patterns
+# 🎯 Design Patterns
 
-Una colección completa de **Patrones de Diseño** implementados en **TypeScript** con ejemplos prácticos, diagramas UML y código ejecutable. Este repositorio está diseñado para aprender y entender los patrones fundamentales de la programación orientada a objetos.
+[🇪🇸 Versión en Español](./README.es.md) | 🇺🇸 English Version
 
-## 📋 ¿Qué son los Patrones de Diseño?
+A comprehensive collection of **Design Patterns** implemented in **TypeScript** with practical examples, UML diagrams, and executable code. This repository is designed to learn and understand fundamental object-oriented programming patterns.
 
-Los **Patrones de Diseño** son soluciones reutilizables a problemas comunes en el diseño de software. Representan las mejores prácticas utilizadas por desarrolladores experimentados y proporcionan un vocabulario común para discutir soluciones de diseño.
+## 📋 What are Design Patterns?
 
-### Beneficios:
-- 🔄 **Reutilización**: Soluciones probadas y testadas
-- 📖 **Comunicación**: Vocabulario común entre desarrolladores  
-- 🏗️ **Estructura**: Mejor organización y arquitectura del código
-- 🛡️ **Mantenibilidad**: Código más fácil de mantener y extender
+**Design Patterns** are reusable solutions to common problems in software design. They represent best practices used by experienced developers and provide a common vocabulary for discussing design solutions.
 
-### 🏃‍♂️ Cómo Ejecutar los Ejemplos
+### Benefits:
+- 🔄 **Reusability**: Proven and tested solutions
+- 📖 **Communication**: Common vocabulary among developers  
+- 🏗️ **Structure**: Better code organization and architecture
+- 🛡️ **Maintainability**: Code that's easier to maintain and extend
+
+### 🏃‍♂️ How to Run the Examples
 
 ```bash
-# Clonar el repositorio
+# Clone the repository
 git clone https://github.com/BernatQI/Design-Patterns.git
 cd Design-Patterns
 
-# Instalar dependencias (si es necesario)
+# Install dependencies (if needed)
 npm install
 
-# Ejecutar un patrón específico
+# Run a specific pattern
 npx ts-node prototype/Main.ts
 npx ts-node singleton/Main.ts
 npx ts-node bridge/Main.ts
 
-# O compilar y ejecutar
+# Or compile and run
 npx tsc --project singleton/tsconfig.json
 node singleton/Main.js
 ```
 
-## 📚 Patrones Implementados
+## 📚 Implemented Patterns
 
-### 🏗️ Patrones Creacionales
-Estos patrones se enfocan en la **creación de objetos**, proporcionando mecanismos que aumentan la flexibilidad y reutilización del código.
+### 🏗️ Creational Patterns
+These patterns focus on **object creation**, providing mechanisms that increase flexibility and code reuse.
 
-| Patrón | Descripción | Estado |
-|--------|-------------|---------|
-| [**Singleton**](./singleton/) | Garantiza una única instancia de una clase | ✅ Implementado |
-| [**Factory Method**](./factory/) | Crea objetos sin especificar clases exactas | ✅ Implementado |
-| [**Abstract Factory**](./abstract-factory/) | Crea familias de objetos relacionados | ✅ Implementado |
-| [**Builder**](./builder/) | Construye objetos complejos paso a paso | ✅ Implementado |
-| [**Prototype**](./prototype/) | Crea objetos clonando instancias existentes | ✅ Implementado |
+| Pattern | Description | Status |
+|---------|-------------|---------|
+| [**Singleton**](./singleton/) | Guarantees a single instance of a class | ✅ Implemented |
+| [**Factory Method**](./factory/) | Creates objects without specifying exact classes | ✅ Implemented |
+| [**Abstract Factory**](./abstract-factory/) | Creates families of related objects | ✅ Implemented |
+| [**Builder**](./builder/) | Builds complex objects step by step | ✅ Implemented |
+| [**Prototype**](./prototype/) | Creates objects by cloning existing instances | ✅ Implemented |
 
-### 🔗 Patrones Estructurales
-Estos patrones se enfocan en la **composición de clases y objetos**, formando estructuras más grandes mientras mantienen flexibilidad y eficiencia.
+### 🔗 Structural Patterns
+These patterns focus on **class and object composition**, forming larger structures while maintaining flexibility and efficiency.
 
-| Patrón | Descripción | Estado |
-|--------|-------------|---------|
-| [**Adapter**](./adapter/) | Permite que interfaces incompatibles trabajen juntas | ✅ Implementado |
-| [**Bridge**](./bridge/) | Separa abstracción de implementación | ✅ Implementado |
-| **Composite** | Compone objetos en estructuras de árbol | 🔄 (próximamente) |
-| **Decorator** | Añade comportamiento a objetos dinámicamente | 🔄 (próximamente) |
-| **Facade** | Proporciona interfaz simplificada a subsistema complejo | 🔄 (próximamente) |
-| **Flyweight** | Minimiza uso de memoria compartiendo datos eficientemente | 🔄 (próximamente) |
-| **Proxy** | Proporciona sustituto o placeholder para otro objeto | 🔄 (próximamente) |
+| Pattern | Description | Status |
+|---------|-------------|---------|
+| [**Adapter**](./adapter/) | Allows incompatible interfaces to work together | ✅ Implemented |
+| [**Bridge**](./bridge/) | Separates abstraction from implementation | ✅ Implemented |
+| **Composite** | Composes objects into tree structures | 🔄 (coming soon) |
+| **Decorator** | Adds behavior to objects dynamically | 🔄 (coming soon) |
+| **Facade** | Provides simplified interface to complex subsystem | 🔄 (coming soon) |
+| **Flyweight** | Minimizes memory usage by sharing data efficiently | 🔄 (coming soon) |
+| **Proxy** | Provides substitute or placeholder for another object | 🔄 (coming soon) |
 
-### 🎭 Patrones Comportamentales
-Estos patrones se enfocan en la **comunicación entre objetos** y la asignación de responsabilidades entre ellos.
+### 🎭 Behavioral Patterns
+These patterns focus on **communication between objects** and the assignment of responsibilities between them.
 
-| Patrón | Descripción | Estado |
-|--------|-------------|---------|
-| **Observer** | Define dependencia uno-a-muchos entre objetos | 🔄 (próximamente) |
-| **Strategy** | Define familia de algoritmos intercambiables | 🔄 (próximamente) |
-| **Command** | Encapsula una solicitud como un objeto | 🔄 (próximamente) |
-| **State** | Permite que objeto altere comportamiento cuando cambia estado | 🔄 (próximamente) |
-| **Template Method** | Define esqueleto de algoritmo en clase base | 🔄 (próximamente) |
-| **Chain of Responsibility** | Pasa solicitudes a lo largo de cadena de manejadores | 🔄 (próximamente) |
-| **Mediator** | Define cómo interactúa un conjunto de objetos | 🔄 (próximamente) |
-| **Memento** | Captura y restaura estado interno de objeto | 🔄 (próximamente) |
-| **Visitor** | Separa algoritmos de objetos sobre los que operan | 🔄 (próximamente) |
-| **Iterator** | Proporciona forma de acceder secuencialmente a elementos | 🔄 (próximamente) |
-| **Interpreter** | Define representación para gramática de lenguaje | 🔄 (próximamente) |
+| Pattern | Description | Status |
+|---------|-------------|---------|
+| **Observer** | Defines one-to-many dependency between objects | 🔄 (coming soon) |
+| **Strategy** | Defines family of interchangeable algorithms | 🔄 (coming soon) |
+| **Command** | Encapsulates a request as an object | 🔄 (coming soon) |
+| **State** | Allows object to alter behavior when internal state changes | 🔄 (coming soon) |
+| **Template Method** | Defines algorithm skeleton in base class | 🔄 (coming soon) |
+| **Chain of Responsibility** | Passes requests along chain of handlers | 🔄 (coming soon) |
+| **Mediator** | Defines how a set of objects interact | 🔄 (coming soon) |
+| **Memento** | Captures and restores object's internal state | 🔄 (coming soon) |
+| **Visitor** | Separates algorithms from objects they operate on | 🔄 (coming soon) |
+| **Iterator** | Provides way to access elements sequentially | 🔄 (coming soon) |
+| **Interpreter** | Defines representation for language grammar | 🔄 (coming soon) |
 
-## 🔍 Características de cada Implementación
+## 🔍 Features of Each Implementation
 
-Cada patrón en este repositorio incluye:
+Each pattern in this repository includes:
 
-- 📊 **Diagrama UML** detallado en Mermaid
-- 🎯 **Problema específico** que resuelve el patrón
-- ✅ **Código TypeScript** completamente funcional
-- 🧪 **Ejemplos prácticos** del mundo real
-- 📝 **Documentación exhaustiva** con casos de uso
-- ⚡ **Código ejecutable** para probar inmediatamente
-- 🔗 **Relaciones** con otros patrones
-- 💡 **Mejores prácticas** y consideraciones
+- 📊 **Detailed UML Diagram** in Mermaid
+- 🎯 **Specific problem** the pattern solves
+- ✅ **Fully functional TypeScript code**
+- 🧪 **Real-world practical examples**
+- 📝 **Comprehensive documentation** with use cases
+- ⚡ **Executable code** to test immediately
+- 🔗 **Relationships** with other patterns
+- 💡 **Best practices** and considerations
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Technologies Used
 
-- **TypeScript** - Tipado fuerte y características modernas
-- **Node.js** - Entorno de ejecución 
-- **Mermaid** - Diagramas UML integrados en markdown
-- **ts-node** - Ejecución directa de TypeScript
+- **TypeScript** - Strong typing and modern features
+- **Node.js** - Runtime environment 
+- **Mermaid** - UML diagrams integrated in markdown
+- **ts-node** - Direct TypeScript execution
 
-## 📖 Recursos Adicionales
+## 📖 Additional Resources
 
-### 📚 Libros Recomendados
+### 📚 Recommended Books
 - **"Design Patterns: Elements of Reusable Object-Oriented Software"** - Gang of Four (GoF)
 - **"Head First Design Patterns"** - Eric Freeman & Elisabeth Robson
 - **"Refactoring: Improving the Design of Existing Code"** - Martin Fowler
 
-### 🌐 Referencias Online
-- [Refactoring Guru - Design Patterns](https://refactoring.guru/design-patterns) (Recomendado)
+### 🌐 Online References
+- [Refactoring Guru - Design Patterns](https://refactoring.guru/design-patterns) (Recommended)
 - [SourceMaking - Design Patterns](https://sourcemaking.com/design_patterns)
 - [DoFactory - Design Patterns](https://www.dofactory.com/net/design-patterns)
 
-## 🤝 Contribuir
+## 🤝 Contributing
 
-¿Quieres contribuir? ¡Genial! Aquí hay algunas formas:
+Want to contribute? Great! Here are some ways:
 
-1. 🐛 **Reportar bugs** o problemas en los ejemplos
-2. 💡 **Sugerir mejoras** en la documentación
-3. 🔧 **Implementar patrones faltantes**
-4. 📝 **Mejorar explicaciones** existentes
-5. 🧪 **Añadir más ejemplos** prácticos
+1. 🐛 **Report bugs** or issues in examples
+2. 💡 **Suggest improvements** in documentation
+3. 🔧 **Implement missing patterns**
+4. 📝 **Improve existing explanations**
+5. 🧪 **Add more practical examples**
 
-### Proceso de Contribución:
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/nuevo-patron`)
-3. Commit tus cambios (`git commit -am 'Añadir patrón Strategy'`)
-4. Push a la rama (`git push origin feature/nuevo-patron`)
-5. Abre un Pull Request
+### Contribution Process:
+1. Fork the repository
+2. Create a branch for your feature (`git checkout -b feature/new-pattern`)
+3. Commit your changes (`git commit -am 'Add Strategy pattern'`)
+4. Push to the branch (`git push origin feature/new-pattern`)
+5. Open a Pull Request
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto está bajo la licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+This project is under the MIT license. See the [LICENSE](LICENSE) file for more details.
 
-## 👨‍💻 Autor
+## 👨‍💻 Author
 
 **BernatQI** - [GitHub](https://github.com/BernatQI)
 
 ---
 
-⭐ **¿Te resultó útil este repositorio?** ¡Dale una estrella y compártelo!
+⭐ **Was this repository useful to you?** Give it a star and share it!
 
-💬 **¿Tienes preguntas?** Abre un issue y te ayudaremos.
+💬 **Have questions?** Open an issue and we'll help you.
 
-🚀 **¿Quieres más contenido?** Sígueme para estar al día con nuevos patrones y ejemplos.
+🚀 **Want more content?** Follow me to stay updated with new patterns and examples.
