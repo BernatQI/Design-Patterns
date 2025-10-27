@@ -1,6 +1,6 @@
 # Patrón Factory Method
 
-🇪🇸 Versión en Español | [🇺🇸 English Version](./README.md)
+[🇺🇸 English Version](./README.md) | 🇪🇸 Versión en Español
 
 ## Diagrama UML
 

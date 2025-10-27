@@ -2,7 +2,7 @@
 
 
 
-[🇪🇸 Versión en Español](./README.es.md) | 🇺🇸 English Version## Diagrama UML
+🇺🇸 English Version | [🇪🇸 Versión en Español](./README.es.md)## Diagrama UML
 
 
 

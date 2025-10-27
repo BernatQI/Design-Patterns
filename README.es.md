@@ -1,6 +1,6 @@
 # 🎯 Patrones de Diseño - Design Patterns
 
-🇪🇸 Versión en Español | [🇺🇸 English Version](./README.md)
+[🇺🇸 English Version](./README.md) | 🇪🇸 Versión en Español
 
 Una colección completa de **Patrones de Diseño** implementados en **TypeScript** con ejemplos prácticos, diagramas UML y código ejecutable. Este repositorio está diseñado para aprender y entender los patrones fundamentales de la programación orientada a objetos.
 

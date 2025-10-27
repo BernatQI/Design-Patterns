@@ -1,6 +1,6 @@
 # 🎯 Design Patterns
 
-[🇪🇸 Versión en Español](./README.es.md) | 🇺🇸 English Version
+🇺🇸 English Version | [🇪🇸 Versión en Español](./README.es.md)
 
 A comprehensive collection of **Design Patterns** implemented in **TypeScript** with practical examples, UML diagrams, and executable code. This repository is designed to learn and understand fundamental object-oriented programming patterns.
 
