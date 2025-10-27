@@ -1,9 +1,6 @@
 import { Component } from './Component';
 
-/**
- * File represents a leaf in the file system tree structure.
- * Files cannot contain other files or directories.
- */
+// File: leaf in file system tree
 export class File implements Component {
     private name: string;
     private size: number;
@@ -25,7 +22,7 @@ export class File implements Component {
         return this.size;
     }
 
-    // Files cannot have children
+    // Files can't have children - throw errors
     add(component: Component): void {
         throw new Error("Cannot add components to a file");
     }
