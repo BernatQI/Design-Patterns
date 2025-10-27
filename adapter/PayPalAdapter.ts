@@ -7,14 +7,14 @@ export class PayPalAdapter implements IPaymentProcessor {
 
     constructor() {
         this.paypalAPI = new PayPalAPI();
-        console.log("🔌 PayPal Adapter inicializado");
+        console.log("🔌 PayPal Adapter initialized");
     }
 
     processPayment(amount: number, currency: string): PaymentResult {
-        // Adaptamos nuestra interfaz a la de PayPal
+        // Adapt our interface to PayPal's
         const paypalResponse = this.paypalAPI.makePayment(amount, currency);
         
-        // Convertimos la respuesta de PayPal a nuestro formato
+        // Convert PayPal response to our format
         return {
             success: paypalResponse.status === "SUCCESS",
             transactionId: paypalResponse.paypal_transaction_id,

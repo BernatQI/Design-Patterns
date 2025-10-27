@@ -56,7 +56,7 @@ export class ConcreteComputerBuilder implements ComputerBuilder {
 
     build(): Computer {
         const result = this.computer;
-        this.reset(); // Preparar para la próxima construcción
+        this.reset(); // Prepare for next construction
         return result;
     }
 }

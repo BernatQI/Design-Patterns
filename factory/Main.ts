@@ -5,10 +5,10 @@ import { TruckFactory } from './TruckFactory';
 import { SimpleVehicleFactory } from './SimpleVehicleFactory';
 
 function main(): void {
-  console.log("=== 🏭 Patrón FACTORY METHOD - Sistema de Vehículos ===\n");
+  console.log("=== 🏭 FACTORY METHOD Pattern - Vehicle System ===\n");
 
-  // Usando Factory Method
-  console.log("1️⃣ Usando patrón Factory Method:");
+  // Using Factory Method
+  console.log("1️⃣ Using Factory Method pattern:");
 
   const carFactory = new CarFactory();
   carFactory.operateVehicle();
@@ -19,15 +19,15 @@ function main(): void {
   const truckFactory = new TruckFactory();
   truckFactory.operateVehicle();
 
-  // Usando Simple Factory
-  console.log("\n2️⃣ Usando patrón Simple Factory:");
+  // Using Simple Factory
+  console.log("\n2️⃣ Using Simple Factory pattern:");
 
   const vehicleTypes = ['car', 'motorcycle', 'truck'];
 
   vehicleTypes.forEach(type => {
     try {
       const vehicle = SimpleVehicleFactory.createVehicle(type);
-      console.log(`\n--- Creando ${vehicle.getVehicleType()} con Simple Factory ---`);
+      console.log(`\n--- Creating ${vehicle.getVehicleType()} with Simple Factory ---`);
       vehicle.start();
       vehicle.stop();
     } catch (error) {
@@ -35,8 +35,8 @@ function main(): void {
     }
   });
 
-  // Ejemplo de manejo de errores
-  console.log("\n3️⃣ Ejemplo de manejo de errores:");
+  // Error handling example
+  console.log("\n3️⃣ Error handling example:");
   try {
     SimpleVehicleFactory.createVehicle('airplane');
   } catch (error) {
@@ -44,5 +44,5 @@ function main(): void {
   }
 }
 
-// Ejecutar el ejemplo
+// Execute the example
 main();

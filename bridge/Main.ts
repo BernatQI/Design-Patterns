@@ -7,76 +7,76 @@ import { UrgentNotification } from './UrgentNotification';
 import { MarketingNotification } from './MarketingNotification';
 
 function main(): void {
-    console.log("=== 🌉 Patrón BRIDGE - Sistema de Notificaciones ===\n");
+    console.log("=== 🌉 BRIDGE Pattern - Notification System ===\n");
 
-    // Crear diferentes implementaciones (senders)
+    // Create different implementations (senders)
     const emailSender = new EmailSender("smtp.company.com");
     const smsSender = new SMSSender("AWS SNS");
     const slackSender = new SlackSender();
 
-    console.log("\n1️⃣ Notificación Simple por diferentes canales:");
+    console.log("\n1️⃣ Simple Notification through different channels:");
     console.log("=".repeat(60));
 
-    // Misma abstracción (SimpleNotification) con diferentes implementaciones
-    const simpleEmail = new SimpleNotification(emailSender, "Tu pedido ha sido confirmado");
-    simpleEmail.send("usuario@email.com");
+    // Same abstraction (SimpleNotification) with different implementations
+    const simpleEmail = new SimpleNotification(emailSender, "Your order has been confirmed");
+    simpleEmail.send("user@email.com");
 
-    const simpleSMS = new SimpleNotification(smsSender, "Tu pedido ha sido confirmado");
+    const simpleSMS = new SimpleNotification(smsSender, "Your order has been confirmed");
     simpleSMS.send("+1234567890");
 
-    const simpleSlack = new SimpleNotification(slackSender, "Tu pedido ha sido confirmado");
+    const simpleSlack = new SimpleNotification(slackSender, "Your order has been confirmed");
     simpleSlack.send("#orders");
 
     console.log("\n" + "-".repeat(70) + "\n");
 
-    console.log("2️⃣ Notificación Urgente - cambiando implementación:");
+    console.log("2️⃣ Urgent Notification - changing implementation:");
     console.log("=".repeat(60));
 
     const urgentNotification = new UrgentNotification(
         emailSender, 
-        "Sistema Caído", 
-        "El servidor principal no responde. Revisar inmediatamente."
+        "System Down", 
+        "Main server not responding. Check immediately."
     );
     
     urgentNotification.send("admin@company.com");
 
-    // Cambiar la implementación en tiempo de ejecución
-    console.log("\n🔄 Cambiando a SMS para mayor inmediatez...");
+    // Change implementation at runtime
+    console.log("\n🔄 Switching to SMS for greater immediacy...");
     urgentNotification.setSender(smsSender);
     urgentNotification.send("+1234567890");
 
     console.log("\n" + "-".repeat(70) + "\n");
 
-    console.log("3️⃣ Notificación de Marketing por múltiples canales:");
+    console.log("3️⃣ Marketing Notification through multiple channels:");
     console.log("=".repeat(60));
 
     const marketingNotification = new MarketingNotification(
         emailSender,
         "Black Friday 2025",
-        "50% de descuento en todos los productos"
+        "50% discount on all products"
     );
 
-    // Enviar por email
-    marketingNotification.send("cliente@email.com");
+    // Send via email
+    marketingNotification.send("customer@email.com");
 
-    // Cambiar a Slack para equipos internos
+    // Switch to Slack for internal teams
     marketingNotification.setSender(slackSender);
     marketingNotification.send("#marketing");
 
-    console.log("\n4️⃣ Ventajas del patrón Bridge:");
+    console.log("\n4️⃣ Bridge pattern advantages:");
     console.log("=".repeat(60));
-    console.log("✅ Abstracción e implementación independientes");
-    console.log("✅ Cambio de implementación en tiempo de ejecución");
-    console.log("✅ Extensibilidad - agregar nuevos tipos sin modificar existentes");
-    console.log("✅ Ocultación de detalles de implementación al cliente");
-    console.log("✅ Cumple principio Abierto/Cerrado");
+    console.log("✅ Abstraction and implementation independent");
+    console.log("✅ Runtime implementation changes");
+    console.log("✅ Extensibility - add new types without modifying existing ones");
+    console.log("✅ Hide implementation details from client");
+    console.log("✅ Follows Open/Closed principle");
 
-    console.log("\n5️⃣ Ejemplo de extensibilidad:");
+    console.log("\n5️⃣ Extensibility example:");
     console.log("=".repeat(60));
-    console.log("📧 Nuevos senders: PushNotification, Teams, Discord");
-    console.log("📝 Nuevos tipos: ReminderNotification, WelcomeNotification");
-    console.log("🔌 Sin modificar código existente");
+    console.log("📧 New senders: PushNotification, Teams, Discord");
+    console.log("📝 New types: ReminderNotification, WelcomeNotification");
+    console.log("🔌 Without modifying existing code");
 }
 
-// Ejecutar el ejemplo
+// Execute the example
 main();

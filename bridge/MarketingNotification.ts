@@ -12,13 +12,13 @@ export class MarketingNotification extends Notification {
     }
 
     send(recipient: string): void {
-        console.log(`\n🎯 Enviando notificación de marketing:`);
-        const marketingMessage = `🎯 ${this.campaign}\n💰 Oferta especial: ${this.offer}\n🔗 Términos y condiciones aplican`;
+        console.log(`\n🎯 Sending marketing notification:`);
+        const marketingMessage = `🎯 ${this.campaign}\n💰 Special offer: ${this.offer}\n🔗 Terms and conditions apply`;
         
         if (this.sender.isAvailable()) {
             this.sender.send(marketingMessage, recipient);
         } else {
-            console.log("❌ El servicio de notificación no está disponible");
+            console.log("❌ Notification service is not available");
         }
     }
 }

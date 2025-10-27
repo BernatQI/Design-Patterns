@@ -13,36 +13,36 @@ export class Document implements IPrototype<Document> {
         this.metadata = new Map();
         this.createdAt = new Date();
         
-        // Simulamos una operación costosa
+        // Simulate an expensive operation
         this.performExpensiveInitialization();
     }
 
     private performExpensiveInitialization(): void {
-        // Simulamos carga de plantillas, validaciones, etc.
-        console.log("🔄 Realizando inicialización costosa...");
+        // Simulate loading templates, validations, etc.
+        console.log("🔄 Performing expensive initialization...");
         
-        // Agregamos metadata por defecto
-        this.metadata.set("author", "Sistema");
+        // Add default metadata
+        this.metadata.set("author", "System");
         this.metadata.set("version", "1.0");
         this.metadata.set("format", "standard");
     }
 
-    // Implementación del patrón Prototype
+    // Implementation of Prototype pattern
     clone(): Document {
-        console.log("📋 Clonando documento existente...");
+        console.log("📋 Cloning existing document...");
         
         const cloned = Object.create(Object.getPrototypeOf(this));
-        cloned.title = this.title + " (Copia)";
+        cloned.title = this.title + " (Copy)";
         cloned.content = this.content;
         cloned.createdAt = new Date();
         
-        // Clonación profunda del Map
+        // Deep cloning of Map
         cloned.metadata = new Map(this.metadata);
         
         return cloned;
     }
 
-    // Métodos para modificar el documento clonado
+    // Methods to modify the cloned document
     setTitle(title: string): void {
         this.title = title;
     }
@@ -60,9 +60,9 @@ export class Document implements IPrototype<Document> {
             .map(([key, value]) => `${key}: ${value}`)
             .join(', ');
             
-        return `📄 Documento: "${this.title}"
-📝 Contenido: ${this.content}
-📅 Creado: ${this.createdAt.toLocaleString()}
+        return `📄 Document: "${this.title}"
+📝 Content: ${this.content}
+📅 Created: ${this.createdAt.toLocaleString()}
 🏷️  Metadata: {${metadataStr}}`;
     }
 }

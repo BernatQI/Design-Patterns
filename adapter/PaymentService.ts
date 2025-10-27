@@ -8,41 +8,41 @@ export class PaymentService {
         this.processor = processor;
     }
 
-    // Cambia el procesador de pagos dinámicamente
+    // Changes payment processor dynamically
     setPaymentProcessor(processor: IPaymentProcessor): void {
         this.processor = processor;
-        console.log("🔄 Procesador de pagos cambiado");
+        console.log("🔄 Payment processor changed");
     }
 
-    // Método unificado que funciona con cualquier adapter
+    // Unified method that works with any adapter
     executePayment(amount: number, currency: string, cardNumber: string): void {
-        console.log(`\n💳 Iniciando pago de ${amount} ${currency}`);
+        console.log(`\n💳 Starting payment of ${amount} ${currency}`);
         
-        // Validar tarjeta
+        // Validate card
         if (!this.processor.validateCard(cardNumber)) {
-            console.log("❌ Tarjeta inválida");
+            console.log("❌ Invalid card");
             return;
         }
 
-        // Procesar pago
+        // Process payment
         const result = this.processor.processPayment(amount, currency);
         
         if (result.success) {
             console.log(`✅ ${result.message}`);
-            console.log(`🧾 ID de transacción: ${result.transactionId}`);
+            console.log(`🧾 Transaction ID: ${result.transactionId}`);
         } else {
             console.log(`❌ Error: ${result.message}`);
         }
     }
 
     executeRefund(transactionId: string, amount: number): void {
-        console.log(`\n🔄 Iniciando reembolso de ${amount} para ${transactionId}`);
+        console.log(`\n🔄 Starting refund of ${amount} for ${transactionId}`);
         
         const result = this.processor.refund(transactionId, amount);
         
         if (result.success) {
             console.log(`✅ ${result.message}`);
-            console.log(`🧾 ID de reembolso: ${result.refundId}`);
+            console.log(`🧾 Refund ID: ${result.refundId}`);
         } else {
             console.log(`❌ Error: ${result.message}`);
         }

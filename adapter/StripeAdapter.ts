@@ -7,11 +7,11 @@ export class StripeAdapter implements IPaymentProcessor {
 
     constructor() {
         this.stripeAPI = new StripeAPI();
-        console.log("🔌 Stripe Adapter inicializado");
+        console.log("🔌 Stripe Adapter initialized");
     }
 
     processPayment(amount: number, currency: string): PaymentResult {
-        // Stripe maneja centavos, convertimos
+        // Stripe handles cents, convert
         const amountInCents = Math.round(amount * 100);
         
         const stripeResponse = this.stripeAPI.charge(amountInCents, currency);

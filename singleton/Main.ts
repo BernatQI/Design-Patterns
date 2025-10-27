@@ -3,59 +3,59 @@ import { ConfigurationManager } from './ConfigurationManager';
 import { DatabaseConnection } from './DatabaseConnection';
 
 function main(): void {
-    console.log("=== 🏛️ Patrón SINGLETON - Sistema de Configuración ===\n");
+    console.log("=== 🏛️ SINGLETON Pattern - Configuration System ===\n");
 
-    console.log("1️⃣ Probando ConfigurationManager:");
+    console.log("1️⃣ Testing ConfigurationManager:");
     console.log("=" .repeat(50));
     
-    // Primera solicitud - crea la instancia
+    // First request - creates the instance
     const config1 = ConfigurationManager.getInstance();
     console.log(`🔑 API Key: ${config1.get('api_key')}`);
     console.log(`🌍 Environment: ${config1.get('environment')}`);
     
     console.log("\n" + "-".repeat(30) + "\n");
     
-    // Segunda solicitud - reutiliza la misma instancia
+    // Second request - reuses the same instance
     const config2 = ConfigurationManager.getInstance();
     config2.set("new_feature", "enabled");
     
     console.log("\n" + "-".repeat(30) + "\n");
     
-    // Tercera solicitud - demuestra que es la misma instancia
+    // Third request - demonstrates it's the same instance
     const config3 = ConfigurationManager.getInstance();
-    console.log(`🆕 Nueva característica: ${config3.get('new_feature')}`);
+    console.log(`🆕 New feature: ${config3.get('new_feature')}`);
     
-    // Verificamos que todas son la misma instancia
-    console.log(`\n🔍 Verificación de identidad:`);
+    // We verify that all are the same instance
+    console.log(`\n🔍 Identity verification:`);
     console.log(`config1 === config2: ${config1 === config2}`);
     console.log(`config2 === config3: ${config2 === config3}`);
     console.log(`config1 === config3: ${config1 === config3}`);
 
-    console.log("\n\n2️⃣ Probando DatabaseConnection:");
+    console.log("\n\n2️⃣ Testing DatabaseConnection:");
     console.log("=" .repeat(50));
     
-    // Primera conexión
+    // First connection
     const db1 = DatabaseConnection.getInstance();
     setTimeout(() => {
         console.log(db1.query("SELECT * FROM users"));
         
-        // Segunda "conexión" - reutiliza la misma
+        // Second "connection" - reuses the same one
         const db2 = DatabaseConnection.getInstance();
         console.log(db2.query("SELECT * FROM products"));
         
-        // Verificamos que es la misma conexión
-        console.log(`\n🔍 Misma conexión: ${db1.getConnectionId() === db2.getConnectionId()}`);
+        // We verify it's the same connection
+        console.log(`\n🔍 Same connection: ${db1.getConnectionId() === db2.getConnectionId()}`);
         console.log(`db1 === db2: ${db1 === db2}`);
         
-        console.log("\n3️⃣ Ventajas del patrón:");
+        console.log("\n3️⃣ Pattern advantages:");
         console.log("=" .repeat(50));
-        console.log("✅ Una sola instancia garantizada");
-        console.log("✅ Acceso global controlado");
-        console.log("✅ Inicialización perezosa (lazy loading)");
-        console.log("✅ Ahorro de recursos (memoria, conexiones)");
-        console.log("✅ Estado consistente en toda la aplicación");
+        console.log("✅ Single instance guaranteed");
+        console.log("✅ Controlled global access");
+        console.log("✅ Lazy initialization");
+        console.log("✅ Resource savings (memory, connections)");
+        console.log("✅ Consistent state throughout the application");
         
-        console.log("\n4️⃣ Configuración actual:");
+        console.log("\n4️⃣ Current configuration:");
         console.log("=" .repeat(50));
         const allConfig = config1.getAllConfig();
         Object.entries(allConfig).forEach(([key, value]) => {
@@ -65,5 +65,5 @@ function main(): void {
     }, 1500);
 }
 
-// Ejecutar el ejemplo
+// Execute the example
 main();

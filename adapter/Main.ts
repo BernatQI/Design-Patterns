@@ -4,16 +4,16 @@ import { PayPalAdapter } from './PayPalAdapter';
 import { StripeAdapter } from './StripeAdapter';
 
 function main(): void {
-    console.log("=== 🔌 Patrón ADAPTER - Sistema de Pagos ===\n");
+    console.log("=== 🔌 ADAPTER Pattern - Payment System ===\n");
 
-    // Crear adapters para diferentes APIs de pago
+    // Create adapters for different payment APIs
     const paypalAdapter = new PayPalAdapter();
     const stripeAdapter = new StripeAdapter();
 
-    // Crear servicio de pagos
+    // Create payment service
     const paymentService = new PaymentService(paypalAdapter);
 
-    console.log("\n1️⃣ Usando PayPal (a través del adapter):");
+    console.log("\n1️⃣ Using PayPal (through adapter):");
     console.log("=".repeat(50));
     
     paymentService.executePayment(99.99, "USD", "4532123456789012");
@@ -21,10 +21,10 @@ function main(): void {
 
     console.log("\n" + "-".repeat(60) + "\n");
 
-    console.log("2️⃣ Cambiando a Stripe (mismo código cliente):");
+    console.log("2️⃣ Switching to Stripe (same client code):");
     console.log("=".repeat(50));
     
-    // Cambiar procesador sin modificar código cliente
+    // Change processor without modifying client code
     paymentService.setPaymentProcessor(stripeAdapter);
     
     paymentService.executePayment(149.50, "EUR", "5555444433221111");
@@ -32,20 +32,20 @@ function main(): void {
 
     console.log("\n" + "-".repeat(60) + "\n");
 
-    console.log("3️⃣ Probando validación de tarjetas:");
+    console.log("3️⃣ Testing card validation:");
     console.log("=".repeat(50));
     
-    // Probar con tarjeta inválida
-    paymentService.executePayment(25.00, "USD", "123"); // Tarjeta inválida
+    // Test with invalid card
+    paymentService.executePayment(25.00, "USD", "123"); // Invalid card
 
-    console.log("\n4️⃣ Ventajas del patrón Adapter:");
+    console.log("\n4️⃣ Adapter pattern advantages:");
     console.log("=".repeat(50));
-    console.log("✅ APIs incompatibles trabajan juntas");
-    console.log("✅ Código cliente no cambia al cambiar proveedores");
-    console.log("✅ Reutilización de código existente");
-    console.log("✅ Separación de responsabilidades");
-    console.log("✅ Fácil agregar nuevos proveedores");
+    console.log("✅ Incompatible APIs work together");
+    console.log("✅ Client code doesn't change when switching providers");
+    console.log("✅ Reuse of existing code");
+    console.log("✅ Separation of responsibilities");
+    console.log("✅ Easy to add new providers");
 }
 
-// Ejecutar el ejemplo
+// Execute the example
 main();

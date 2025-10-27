@@ -7,26 +7,26 @@ import { FurnitureStore } from './FurnitureStore';
 function main(): void {
     console.log("=== ABSTRACT FACTORY PATTERN DEMO ===");
 
-    // Crear las factories
+    // Create factories
     const modernFactory = new ModernFurnitureFactory();
     const victorianFactory = new VictorianFurnitureFactory();
     const industrialFactory = new IndustrialFurnitureFactory();
 
-    // Usar la tienda con diferentes factories
+    // Use store with different factories
     const store = new FurnitureStore(modernFactory);
 
-    // Orden Modern
+    // Modern order
     store.orderFurnitureSet();
 
-    // Cambiar a Victorian
+    // Change to Victorian
     store.setFactory(victorianFactory);
     store.orderFurnitureSet();
 
-    // Cambiar a Industrial
+    // Change to Industrial
     store.setFactory(industrialFactory);
     store.orderFurnitureSet();
 
-    // Ejemplo: Cliente escoge estilo
+    // Example: Customer chooses style
     console.log("\n=== DYNAMIC FACTORY SELECTION ===");
     
     const styles = ['modern', 'victorian', 'industrial', 'gothic'];
@@ -56,5 +56,5 @@ function getFactoryByStyle(style: string) {
     }
 }
 
-// Ejecutar el demo
+// Execute the demo
 main();

@@ -6,7 +6,7 @@ export abstract class FurnitureFactory {
     abstract createSofa(): Sofa;
     abstract createTable(): Table;
 
-    // Método template que usa el factory
+    // Template method that uses the factory
     public createFurnitureSet(): { chair: Chair; sofa: Sofa; table: Table } {
         return {
             chair: this.createChair(),

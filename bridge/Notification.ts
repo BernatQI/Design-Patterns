@@ -8,11 +8,11 @@ export abstract class Notification {
         this.sender = sender;
     }
 
-    // Permite cambiar la implementación en tiempo de ejecución
+    // Allows changing implementation at runtime
     setSender(sender: INotificationSender): void {
         this.sender = sender;
     }
 
-    // Método abstracto que las subclases deben implementar
+    // Abstract method that subclasses must implement
     abstract send(recipient: string): void;
 }

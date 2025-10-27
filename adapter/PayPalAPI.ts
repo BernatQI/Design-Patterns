@@ -1,10 +1,10 @@
 // ./adapter/PayPalAPI.ts
-// Simulamos una API externa de PayPal con su propia interfaz
+// Simulate external PayPal API with its own interface
 export class PayPalAPI {
     makePayment(sum: number, currency: string): PayPalResponse {
-        console.log(`💰 PayPal: Procesando pago de ${sum} ${currency}`);
+        console.log(`💰 PayPal: Processing payment of ${sum} ${currency}`);
         
-        // Simulamos respuesta de PayPal
+        // Simulate PayPal response
         return {
             status: "SUCCESS",
             paypal_transaction_id: `PP_${Date.now()}`,
@@ -13,12 +13,12 @@ export class PayPalAPI {
     }
 
     verifyCardNumber(card: string): boolean {
-        console.log(`🔍 PayPal: Validando tarjeta ${card.slice(-4).padStart(card.length, '*')}`);
+        console.log(`🔍 PayPal: Validating card ${card.slice(-4).padStart(card.length, '*')}`);
         return card.length === 16;
     }
 
     reverseTransaction(txnId: string, amount: number): PayPalRefundResponse {
-        console.log(`🔄 PayPal: Reversando transacción ${txnId} por ${amount}`);
+        console.log(`🔄 PayPal: Reversing transaction ${txnId} for ${amount}`);
         
         return {
             status: "REFUNDED",

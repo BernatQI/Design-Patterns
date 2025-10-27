@@ -12,13 +12,13 @@ export class UrgentNotification extends Notification {
     }
 
     send(recipient: string): void {
-        console.log(`\n🚨 Enviando notificación URGENTE:`);
-        const urgentMessage = `🚨 URGENTE: ${this.title}\n${this.message}`;
+        console.log(`\n🚨 Sending URGENT notification:`);
+        const urgentMessage = `🚨 URGENT: ${this.title}\n${this.message}`;
         
         if (this.sender.isAvailable()) {
             this.sender.send(urgentMessage, recipient);
         } else {
-            console.log("❌ El servicio de notificación no está disponible");
+            console.log("❌ Notification service is not available");
         }
     }
 }

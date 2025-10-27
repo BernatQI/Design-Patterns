@@ -79,5 +79,5 @@ function main(): void {
   minimalPC.boot();
 }
 
-// Ejecutar el demo
+// Execute the demo
 main();

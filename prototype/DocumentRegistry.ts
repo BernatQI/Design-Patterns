@@ -4,18 +4,18 @@ import { Document } from './Document';
 export class DocumentRegistry {
     private prototypes: Map<string, Document> = new Map();
 
-    // Registrar prototipos predefinidos
+    // Register predefined prototypes
     registerPrototype(key: string, prototype: Document): void {
         this.prototypes.set(key, prototype);
-        console.log(`✅ Prototipo '${key}' registrado`);
+        console.log(`✅ Prototype '${key}' registered`);
     }
 
-    // Crear nuevo documento basado en un prototipo
+    // Create new document based on a prototype
     createDocument(prototypeKey: string): Document | null {
         const prototype = this.prototypes.get(prototypeKey);
         
         if (!prototype) {
-            console.log(`❌ Prototipo '${prototypeKey}' no encontrado`);
+            console.log(`❌ Prototype '${prototypeKey}' not found`);
             return null;
         }
 

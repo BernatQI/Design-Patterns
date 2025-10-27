@@ -6,34 +6,34 @@ export class DatabaseConnection {
 
     private constructor() {
         this.connectionId = `db-${Date.now()}`;
-        console.log("🗄️ Inicializando conexión a base de datos...");
+        console.log("🗄️ Initializing database connection...");
         this.connect();
     }
 
     public static getInstance(): DatabaseConnection {
         if (!DatabaseConnection.instance) {
-            console.log("🆕 Creando nueva conexión a BD");
+            console.log("🆕 Creating new database connection");
             DatabaseConnection.instance = new DatabaseConnection();
         } else {
-            console.log("🔗 Reutilizando conexión existente");
+            console.log("🔗 Reusing existing connection");
         }
         return DatabaseConnection.instance;
     }
 
     private connect(): void {
-        console.log("🔌 Estableciendo conexión con la base de datos...");
-        // Simulamos conexión costosa
+        console.log("🔌 Establishing database connection...");
+        // Simulate expensive connection
         setTimeout(() => {
             this.isConnected = true;
-            console.log(`✅ Conectado a BD con ID: ${this.connectionId}`);
+            console.log(`✅ Connected to DB with ID: ${this.connectionId}`);
         }, 1000);
     }
 
     public query(sql: string): string {
         if (!this.isConnected) {
-            return "❌ Error: No hay conexión a la base de datos";
+            return "❌ Error: No database connection";
         }
-        return `📊 Ejecutando query: ${sql} | Conexión: ${this.connectionId}`;
+        return `📊 Executing query: ${sql} | Connection: ${this.connectionId}`;
     }
 
     public getConnectionId(): string {

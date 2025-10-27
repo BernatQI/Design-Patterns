@@ -6,18 +6,18 @@ export class SMSSender implements INotificationSender {
     
     constructor(provider: string = "Twilio") {
         this.provider = provider;
-        console.log(`📱 SMSSender inicializado con ${provider}`);
+        console.log(`📱 SMSSender initialized with ${provider}`);
     }
 
     send(message: string, recipient: string): void {
-        console.log(`📱 Enviando SMS a ${recipient}`);
-        console.log(`📡 Proveedor: ${this.provider}`);
-        console.log(`💬 Mensaje: ${message}`);
-        console.log("✅ SMS enviado exitosamente");
+        console.log(`📱 Sending SMS to ${recipient}`);
+        console.log(`📡 Provider: ${this.provider}`);
+        console.log(`💬 Message: ${message}`);
+        console.log("✅ SMS sent successfully");
     }
 
     isAvailable(): boolean {
-        // Simulamos verificación de créditos SMS
+        // Simulate SMS credits verification
         return true;
     }
 }

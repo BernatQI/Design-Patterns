@@ -6,18 +6,18 @@ export class EmailSender implements INotificationSender {
     
     constructor(smtpServer: string = "smtp.gmail.com") {
         this.smtpServer = smtpServer;
-        console.log(`📧 EmailSender inicializado con ${smtpServer}`);
+        console.log(`📧 EmailSender initialized with ${smtpServer}`);
     }
 
     send(message: string, recipient: string): void {
-        console.log(`📧 Enviando email a ${recipient}`);
-        console.log(`📨 Servidor SMTP: ${this.smtpServer}`);
-        console.log(`✉️ Contenido: ${message}`);
-        console.log("✅ Email enviado exitosamente");
+        console.log(`📧 Sending email to ${recipient}`);
+        console.log(`📨 SMTP Server: ${this.smtpServer}`);
+        console.log(`✉️ Content: ${message}`);
+        console.log("✅ Email sent successfully");
     }
 
     isAvailable(): boolean {
-        // Simulamos verificación de conectividad SMTP
+        // Simulate SMTP connectivity check
         return true;
     }
 }

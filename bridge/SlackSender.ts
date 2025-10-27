@@ -6,18 +6,18 @@ export class SlackSender implements INotificationSender {
     
     constructor(webhook: string = "https://hooks.slack.com/webhook") {
         this.webhook = webhook;
-        console.log(`💬 SlackSender inicializado con webhook`);
+        console.log(`💬 SlackSender initialized with webhook`);
     }
 
     send(message: string, recipient: string): void {
-        console.log(`💬 Enviando mensaje Slack al canal ${recipient}`);
+        console.log(`💬 Sending Slack message to channel ${recipient}`);
         console.log(`🔗 Webhook: ${this.webhook}`);
-        console.log(`📝 Mensaje: ${message}`);
-        console.log("✅ Mensaje Slack enviado exitosamente");
+        console.log(`📝 Message: ${message}`);
+        console.log("✅ Slack message sent successfully");
     }
 
     isAvailable(): boolean {
-        // Simulamos verificación de webhook
+        // Simulate webhook verification
         return true;
     }
 }

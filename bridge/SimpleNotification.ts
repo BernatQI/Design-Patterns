@@ -10,11 +10,11 @@ export class SimpleNotification extends Notification {
     }
 
     send(recipient: string): void {
-        console.log(`\n📢 Enviando notificación simple:`);
+        console.log(`\n📢 Sending simple notification:`);
         if (this.sender.isAvailable()) {
             this.sender.send(this.message, recipient);
         } else {
-            console.log("❌ El servicio de notificación no está disponible");
+            console.log("❌ Notification service is not available");
         }
     }
 }
