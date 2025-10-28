@@ -56,7 +56,7 @@ Estos patrones se enfocan en la **composición de clases y objetos**, formando e
 | [**Bridge**](./bridge/) | Separa abstracción de implementación | ✅ Implementado |
 | [**Composite**](./composite/) | Compone objetos en estructuras de árbol | ✅ Implementado |
 | [**Decorator**](./decorator/) | Añade comportamiento a objetos dinámicamente | ✅ Implementado |
-| **Facade** | Proporciona interfaz simplificada a subsistema complejo | 🔄 (próximamente) |
+| [**Facade**](./facade/) | Proporciona interfaz simplificada a subsistema complejo | ✅ Implementado |
 | **Flyweight** | Minimiza uso de memoria compartiendo datos eficientemente | 🔄 (próximamente) |
 | **Proxy** | Proporciona sustituto o placeholder para otro objeto | 🔄 (próximamente) |
 
