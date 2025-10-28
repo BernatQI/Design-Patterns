@@ -55,7 +55,7 @@ These patterns focus on **class and object composition**, forming larger structu
 | [**Adapter**](./adapter/) | Allows incompatible interfaces to work together | ✅ Implemented |
 | [**Bridge**](./bridge/) | Separates abstraction from implementation | ✅ Implemented |
 | [**Composite**](./composite/) | Composes objects into tree structures | ✅ Implemented |
-| **Decorator** | Adds behavior to objects dynamically | 🔄 (coming soon) |
+| [**Decorator**](./decorator/) | Adds behavior to objects dynamically | ✅ Implemented |
 | **Facade** | Provides simplified interface to complex subsystem | 🔄 (coming soon) |
 | **Flyweight** | Minimizes memory usage by sharing data efficiently | 🔄 (coming soon) |
 | **Proxy** | Provides substitute or placeholder for another object | 🔄 (coming soon) |
