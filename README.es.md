@@ -57,7 +57,7 @@ Estos patrones se enfocan en la **composición de clases y objetos**, formando e
 | [**Composite**](./composite/) | Compone objetos en estructuras de árbol | ✅ Implementado |
 | [**Decorator**](./decorator/) | Añade comportamiento a objetos dinámicamente | ✅ Implementado |
 | [**Facade**](./facade/) | Proporciona interfaz simplificada a subsistema complejo | ✅ Implementado |
-| **Flyweight** | Minimiza uso de memoria compartiendo datos eficientemente | 🔄 (próximamente) |
+| [**Flyweight**](./flyweight/) | Minimiza uso de memoria compartiendo datos eficientemente | ✅ Implementado |
 | **Proxy** | Proporciona sustituto o placeholder para otro objeto | 🔄 (próximamente) |
 
 ### 🎭 Patrones Comportamentales

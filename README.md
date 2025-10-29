@@ -57,7 +57,7 @@ These patterns focus on **class and object composition**, forming larger structu
 | [**Composite**](./composite/) | Composes objects into tree structures | ✅ Implemented |
 | [**Decorator**](./decorator/) | Adds behavior to objects dynamically | ✅ Implemented |
 | [**Facade**](./facade/) | Provides simplified interface to complex subsystem | ✅ Implemented |
-| **Flyweight** | Minimizes memory usage by sharing data efficiently | 🔄 (coming soon) |
+| [**Flyweight**](./flyweight/) | Minimizes memory usage by sharing data efficiently | ✅ Implemented |
 | **Proxy** | Provides substitute or placeholder for another object | 🔄 (coming soon) |
 
 ### 🎭 Behavioral Patterns
