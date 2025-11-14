@@ -23,6 +23,7 @@ El patrón Decorator envuelve objetos en clases decoradoras que:
 ## Estructura
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#333333", "lineColor": "#333333", "secondaryColor": "#f8f8f8", "tertiaryColor": "#ffffff"}}}%%
 classDiagram
     class Component {
         <<interface>>
